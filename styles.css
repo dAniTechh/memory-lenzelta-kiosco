@@ -1,6 +1,6 @@
 /* =========================================
-   1. VARIABLES Y SISTEMA DE DISEÑO
-   Valores base → Desktop (1200–1919px)
+   1. VARIABLES Y SISTEMA DE DISEÑO LÍQUIDO (FLUID DESIGN)
+   La magia de clamp(): clamp(Mínimo, Ideal, Máximo)
 ========================================= */
 :root {
     --bg-color: #000000;
@@ -17,17 +17,18 @@
     --blur-md: blur(16px);
     --blur-lg: blur(24px);
 
-    --radius-sm:   8px;
-    --radius-md:   12px;
-    --radius-lg:   20px;
+    /* Bordes fluidos */
+    --radius-sm:   clamp(6px, 1vmin, 10px);
+    --radius-md:   clamp(10px, 1.5vmin, 16px);
+    --radius-lg:   clamp(16px, 2.5vmin, 24px);
     --radius-pill: 50px;
 
-    /* Escala tipográfica elegante y contenida */
-    --fs-sm:   1.1rem;
-    --fs-md:   1.4rem;
-    --fs-lg:   2.2rem;
-    --fs-xl:   3rem;
-    --fs-icon: 4.5rem;
+    /* Tipografía 100% adaptable a cualquier pantalla */
+    --fs-sm:   clamp(0.9rem, 1.5vmin, 1.5rem);
+    --fs-md:   clamp(1.1rem, 2vmin, 2.2rem);
+    --fs-lg:   clamp(1.5rem, 3vmin, 3.2rem);
+    --fs-xl:   clamp(2.2rem, 5vmin, 4.5rem);
+    --fs-icon: clamp(3rem, 7vmin, 6rem);
 }
 
 /* =========================================
@@ -64,13 +65,8 @@ body {
 }
 
 /* ESTADO JUEGO: más claro */
-body.modo-juego {
-    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3);
-}
-
-body.modo-juego .screensaver-panel {
-    display: none !important;
-}
+body.modo-juego { box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3); }
+body.modo-juego .screensaver-panel { display: none !important; }
 
 /* =========================================
    3. GLASSMORPHISM
@@ -91,11 +87,11 @@ body.modo-juego .screensaver-panel {
 .panel-control {
     display:         flex;
     justify-content: space-between;
-    width:           90%;
-    max-width:       900px; /* Reducido para agrupar la info */
+    width:           95%;
+    max-width:       1000px;
     font-size:       var(--fs-md);
-    margin-bottom:   2rem;
-    padding:         1rem 3rem;
+    margin-bottom:   clamp(10px, 2vh, 30px);
+    padding:         clamp(10px, 1.5vh, 20px) clamp(20px, 3vw, 40px);
     font-weight:     700;
     letter-spacing:  2px;
 }
@@ -107,9 +103,10 @@ body.modo-juego .screensaver-panel {
 
 .tablero {
     display:               grid;
-    grid-template-columns: repeat(4, 130px); /* Tamaño ideal de carta */
-    grid-template-rows:    repeat(4, 130px);
-    gap:                   15px; /* Separación elegante */
+    /* Las cartas calculan su tamaño según el espacio disponible en pantalla */
+    grid-template-columns: repeat(4, clamp(65px, 16vmin, 180px));
+    grid-template-rows:    repeat(4, clamp(65px, 16vmin, 180px));
+    gap:                   clamp(8px, 1.5vmin, 25px);
     perspective:           1000px;
 }
 
@@ -150,17 +147,14 @@ body.modo-juego .screensaver-panel {
     transition: box-shadow 0.3s ease;
 }
 
-.carta-dorso:hover {
-    box-shadow: 0 0 30px rgba(var(--neon-blue-rgb), 0.8);
-}
+.carta-dorso:hover { box-shadow: 0 0 30px rgba(var(--neon-blue-rgb), 0.8); }
 
 /* FRENTE */
 .carta-frente {
     background: #000000;
     transform:  rotateY(180deg);
     border:     2px solid var(--neon-blue);
-    box-shadow: 0 0 20px rgba(var(--neon-blue-rgb), 0.2),
-                inset 0 0 15px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 20px rgba(var(--neon-blue-rgb), 0.2), inset 0 0 15px rgba(0, 0, 0, 0.8);
 }
 
 .imagen-carta {
@@ -176,9 +170,9 @@ body.modo-juego .screensaver-panel {
 ========================================= */
 dialog {
     margin:    auto;
-    padding:   2.5rem;
+    padding:   clamp(1.5rem, 4vmin, 4rem);
     text-align: center;
-    max-width: 700px;
+    max-width: 800px;
     width:     90%;
     color:     white;
 }
@@ -193,7 +187,7 @@ dialog h2 {
     font-size:      var(--fs-xl);
     font-weight:    900;
     margin-bottom:  0.5rem;
-    letter-spacing: 3px;
+    letter-spacing: clamp(1px, 0.5vw, 4px);
     background:     linear-gradient(to right, var(--neon-blue), var(--neon-purple));
     -webkit-background-clip: text;
     background-clip:         text;
@@ -203,7 +197,7 @@ dialog h2 {
 
 .subtitle {
     font-size:     var(--fs-sm);
-    margin-bottom: 2rem;
+    margin-bottom: clamp(1rem, 3vh, 2.5rem);
     color:         #8892b0;
 }
 
@@ -215,12 +209,12 @@ dialog h2 {
 
 input[type="text"] {
     font-size:      var(--fs-lg);
-    padding:        1rem;
+    padding:        clamp(10px, 2vmin, 20px);
     border-radius:  var(--radius-md);
     border:         2px solid var(--neon-blue);
     background:     rgba(0, 0, 0, 0.3);
     color:          white;
-    margin-bottom:  2rem;
+    margin-bottom:  clamp(15px, 3vh, 30px);
     text-align:     center;
     width:          100%;
     outline:        none;
@@ -233,17 +227,18 @@ input[type="text"] {
    6. TÍTULOS Y BOTONES
 ========================================= */
 .titulo-principal {
-    font-size:      3.5rem;
-    letter-spacing: 6px;
-    margin-bottom:  1.5rem;
+    font-size:      clamp(2rem, 5vmin, 4.5rem);
+    letter-spacing: clamp(3px, 1vmin, 8px);
+    margin-bottom:  clamp(10px, 2vh, 25px);
     text-align:     center;
 }
 
 .botones-seleccion {
     display:         flex;
-    gap:             15px;
+    flex-wrap:       wrap;
+    gap:             clamp(10px, 2vmin, 20px);
     justify-content: center;
-    margin-top:      25px;
+    margin-top:      clamp(15px, 3vh, 30px);
 }
 
 .btn-num {
@@ -258,15 +253,11 @@ input[type="text"] {
 }
 
 .btn-num:hover,
-.btn-num:active {
-    background: var(--neon-blue);
-    color:      #000;
-    box-shadow: 0 0 20px var(--neon-blue);
-}
+.btn-num:active { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
 
 .btn-neon {
     font-size:      var(--fs-md);
-    padding:        1rem 3rem;
+    padding:        clamp(12px, 2vmin, 20px) clamp(20px, 4vmin, 40px);
     border:         none;
     border-radius:  var(--radius-pill);
     background:     var(--neon-blue);
@@ -278,25 +269,22 @@ input[type="text"] {
     box-shadow:     0 0 15px rgba(var(--neon-blue-rgb), 0.4);
 }
 
-.btn-neon:active {
-    transform:  scale(0.95);
-    box-shadow: 0 0 30px rgba(var(--neon-blue-rgb), 0.8);
-}
+.btn-neon:active { transform: scale(0.95); box-shadow: 0 0 30px rgba(var(--neon-blue-rgb), 0.8); }
 
 /* =========================================
-   7. TECLADO VIRTUAL KIOSCO
+   7. TECLADO VIRTUAL FLUIDO
 ========================================= */
 .teclado-virtual {
     display:        flex;
     flex-direction: column;
-    gap:            10px;
-    margin-bottom:  2.5rem;
+    gap:            clamp(6px, 1.5vmin, 12px);
+    margin-bottom:  clamp(20px, 4vh, 40px);
 }
 
 .fila-teclado {
     display:         flex;
     justify-content: center;
-    gap:             10px;
+    gap:             clamp(6px, 1.5vmin, 12px);
 }
 
 .tecla {
@@ -306,8 +294,8 @@ input[type="text"] {
     color:                   white;
     font-size:               var(--fs-md);
     font-weight:             700;
-    width:                   55px;
-    height:                  60px;
+    width:                   clamp(40px, 6vmin, 75px);
+    height:                  clamp(45px, 7vmin, 85px);
     cursor:                  pointer;
     transition:              background 0.1s, box-shadow 0.1s, transform 0.1s;
     backdrop-filter:         var(--blur-sm);
@@ -315,25 +303,14 @@ input[type="text"] {
 }
 
 .tecla-especial {
-    width:        90px;
+    width:        clamp(70px, 10vmin, 130px);
     background:   rgba(255, 50, 50, 0.1);
     border-color: rgba(255, 50, 50, 0.3);
     color:        #ff4d4d;
 }
 
-.tecla:active {
-    transform:    translateY(5px) scale(0.95);
-    background:   var(--neon-blue);
-    color:        #000;
-    box-shadow:   0 0 15px var(--neon-blue);
-    border-color: transparent;
-}
-
-.tecla-especial:active {
-    background: #ff4d4d;
-    color:      #000;
-    box-shadow: 0 0 15px #ff4d4d;
-}
+.tecla:active          { transform: translateY(5px) scale(0.95); background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); border-color: transparent; }
+.tecla-especial:active { background: #ff4d4d; color: #000; box-shadow: 0 0 15px #ff4d4d; }
 
 /* =========================================
    8. PODIO ESTILO KAHOOT
@@ -342,9 +319,9 @@ input[type="text"] {
     display:         flex;
     justify-content: center;
     align-items:     flex-end;
-    gap:             10px;
-    height:          280px; /* Más proporcionado */
-    margin:          30px 0;
+    gap:             clamp(6px, 1.5vmin, 15px);
+    height:          clamp(180px, 35vh, 400px);
+    margin:          clamp(15px, 3vh, 40px) 0;
     padding-bottom:  10px;
 }
 
@@ -352,7 +329,7 @@ input[type="text"] {
     display:        flex;
     flex-direction: column;
     align-items:    center;
-    width:          120px;
+    width:          clamp(80px, 15vw, 160px);
 }
 
 .barra-podio {
@@ -360,23 +337,23 @@ input[type="text"] {
     display:         flex;
     flex-direction:  column;
     justify-content: space-between;
-    padding:         15px 0;
+    padding:         clamp(10px, 2vh, 20px) 0;
     border-radius:   8px 8px 0 0;
     animation:       subirPodio 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
     position:        relative;
     border:          1px solid rgba(255, 255, 255, 0.2);
 }
 
-.puesto-numero { font-size: 3rem; font-weight: 900; color: rgba(255, 255, 255, 0.5); }
-.nombre-podio  { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.tiempo-podio  { font-size: 1.2rem; font-weight: 900; background: rgba(0, 0, 0, 0.3); padding: 5px 8px; border-radius: 5px; }
+.puesto-numero { font-size: clamp(2rem, 5vmin, 4rem); font-weight: 900; color: rgba(255, 255, 255, 0.5); }
+.nombre-podio  { font-size: clamp(1rem, 2vmin, 1.6rem); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.tiempo-podio  { font-size: clamp(0.9rem, 1.8vmin, 1.3rem); font-weight: 900; background: rgba(0, 0, 0, 0.3); padding: 5px 8px; border-radius: 5px; }
 
-.oro    .barra-podio { height: 200px; background: linear-gradient(to top, #926d00, #ffd700); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); z-index: 2; }
-.plata  .barra-podio { height: 140px; background: linear-gradient(to top, #535353, #c0c0c0); box-shadow: 0 0 15px rgba(192, 192, 192, 0.3); }
-.bronce .barra-podio { height: 100px; background: linear-gradient(to top, #7a431d, #cd7f32); box-shadow: 0 0 10px rgba(205, 127, 50, 0.2); }
+.oro    .barra-podio { height: clamp(130px, 28vh, 320px); background: linear-gradient(to top, #926d00, #ffd700); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); z-index: 2; }
+.plata  .barra-podio { height: clamp(90px, 20vh, 220px); background: linear-gradient(to top, #535353, #c0c0c0); box-shadow: 0 0 15px rgba(192, 192, 192, 0.3); }
+.bronce .barra-podio { height: clamp(60px, 12vh, 150px); background: linear-gradient(to top, #7a431d, #cd7f32); box-shadow: 0 0 10px rgba(205, 127, 50, 0.2); }
 
-.resto-clasificacion { display: flex; flex-direction: column; gap: 8px; max-width: 350px; margin: 0 auto 20px; }
-.fila-otros { display: flex; justify-content: space-between; background: rgba(255, 255, 255, 0.05); padding: 8px 15px; border-radius: 8px; font-size: 1.1rem; opacity: 0.8; }
+.resto-clasificacion { display: flex; flex-direction: column; gap: 8px; max-width: 400px; margin: 0 auto 20px; }
+.fila-otros { display: flex; justify-content: space-between; background: rgba(255, 255, 255, 0.05); padding: clamp(8px, 1.5vh, 15px) 20px; border-radius: 8px; font-size: var(--fs-md); opacity: 0.8; }
 
 @keyframes subirPodio { from { height: 0; opacity: 0; } }
 
@@ -401,7 +378,7 @@ input[type="text"] {
 .screensaver-panel::backdrop { background: transparent; }
 
 .texto-latido {
-    font-size:   5rem; /* Menos agresivo */
+    font-size:   clamp(3rem, 10vmin, 8rem);
     font-weight: 900;
     text-align:  center;
     line-height: 1.2;
@@ -420,10 +397,10 @@ input[type="text"] {
 ========================================= */
 .btn-volver {
     position:                fixed;
-    top:                     20px;
-    left:                    20px;
-    font-size:               1.2rem;
-    padding:                 8px 16px;
+    top:                     clamp(10px, 3vh, 30px);
+    left:                    clamp(10px, 3vw, 30px);
+    font-size:               var(--fs-sm);
+    padding:                 clamp(6px, 1vh, 12px) clamp(12px, 2vw, 24px);
     border-radius:           var(--radius-sm);
     background:              rgba(0, 0, 0, 0.6);
     border:                  2px solid var(--neon-blue);
@@ -440,119 +417,24 @@ input[type="text"] {
 .btn-volver:active { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
 
 /* =========================================
-   11. LOGO EMPRESA (ESQUINA INFERIOR IZQUIERDA)
+   11. LOGO EMPRESA
 ========================================= */
 .logo-empresa {
     position:       fixed;
-    bottom:         20px;
-    left:           20px;
-    height:         140px; /* Proporcional a la pantalla */
+    bottom:         clamp(10px, 3vh, 30px);
+    left:           clamp(10px, 3vw, 30px);
+    height:         clamp(60px, 15vh, 220px); /* Adaptación perfecta al % de pantalla */
     z-index:        9999;
     pointer-events: none;
-    border-radius:  10px;
+    border-radius:  clamp(6px, 1.5vmin, 15px);
     box-shadow:     0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 /* =========================================
-   12. RESPONSIVE — 6 BREAKPOINTS
+   12. MEDIA QUERIES (SÓLO PARA CASOS EXTREMOS)
+   Como todo es fluido ahora, sólo necesitamos 
+   ajustar si la pantalla es inusualmente baja.
 ========================================= */
-
-/* ── TV 55" (1080p nativo o superior, Kiosco) ────────────────── */
-/* Aquí escalamos un poco para la tele, pero sin pasarnos */
-@media (min-width: 1920px) {
-    :root {
-        --fs-sm:   1.4rem;
-        --fs-md:   1.8rem;
-        --fs-lg:   2.8rem;
-        --fs-xl:   4rem;
-        --fs-icon: 6rem;
-    }
-    .tablero { grid-template-columns: repeat(4, 160px); grid-template-rows: repeat(4, 160px); gap: 25px; }
-    .panel-control { max-width: 1200px; padding: 1.5rem 4rem; margin-bottom: 3rem; }
-    dialog { max-width: 850px; padding: 3rem; }
-    .tecla { width: 70px; height: 80px; }
-    .tecla-especial { width: 120px; }
-    .titulo-principal { font-size: 4.5rem; letter-spacing: 8px; }
-    .texto-latido     { font-size: 7rem; }
-    .logo-empresa { height: 220px; bottom: 30px; left: 30px; }
-    .podio-kahoot   { height: 400px; }
-    .oro    .barra-podio { height: 300px; }
-    .plata  .barra-podio { height: 200px; }
-    .bronce .barra-podio { height: 140px; }
-}
-
-/* ── Laptop Mediano (900–1199px) ────────────────────────────── */
-@media (max-width: 1199px) {
-    :root {
-        --fs-sm:   1rem;
-        --fs-md:   1.2rem;
-        --fs-lg:   1.8rem;
-        --fs-xl:   2.5rem;
-        --fs-icon: 3.5rem;
-    }
-    .tablero { grid-template-columns: repeat(4, 100px); grid-template-rows: repeat(4, 100px); gap: 12px; }
-    .panel-control { padding: 1rem 2rem; max-width: 700px; margin-bottom: 1.5rem; }
-    dialog { padding: 2rem; max-width: 600px; }
-    .tecla { width: 45px; height: 50px; font-size: 1.2rem; }
-    .tecla-especial { width: 80px; }
-    .titulo-principal { font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 1rem; }
-    .logo-empresa { height: 100px; }
-    .podio-kahoot   { height: 240px; }
-    .oro    .barra-podio { height: 160px; }
-    .plata  .barra-podio { height: 110px; }
-    .bronce .barra-podio { height: 80px; }
-}
-
-/* ── Tablet (600–899px) ─────────────────────────────────────── */
-@media (max-width: 899px) {
-    :root {
-        --fs-sm:   0.9rem;
-        --fs-md:   1.1rem;
-        --fs-lg:   1.6rem;
-        --fs-xl:   2.2rem;
-    }
-    .tablero { grid-template-columns: repeat(4, 85px); grid-template-rows: repeat(4, 85px); gap: 10px; }
-    .panel-control { flex-direction: column; align-items: center; gap: 5px; padding: 0.8rem; margin-bottom: 1rem; }
-    .tecla { width: 40px; height: 45px; font-size: 1rem; }
-    .tecla-especial { width: 70px; }
-    .titulo-principal { font-size: 2.2rem; margin-bottom: 0.8rem; }
-    .texto-latido     { font-size: 3.5rem; }
-    .logo-empresa { height: 80px; bottom: 15px; left: 15px; }
-    .btn-volver { font-size: 1rem; padding: 6px 12px; }
-}
-
-/* ── Móvil landscape (≤ 599px) ──────────────────────────────── */
-@media (max-width: 599px) {
-    body { padding-top: 10px; justify-content: flex-start; }
-    .tablero { grid-template-columns: repeat(4, 65px); grid-template-rows: repeat(4, 65px); gap: 8px; }
-    dialog { padding: 1rem; width: 95%; }
-    .tecla { width: 35px; height: 40px; }
-    .tecla-especial { width: 60px; }
-    .titulo-principal { font-size: 1.8rem; letter-spacing: 2px; }
-    .logo-empresa { height: 60px; bottom: 10px; left: 10px; }
-    .podio-kahoot   { height: 180px; margin: 15px 0; }
-    .oro    .barra-podio { height: 120px; }
-    .plata  .barra-podio { height: 85px; }
-    .bronce .barra-podio { height: 60px; }
-}
-
-/* ── Móvil portrait muy pequeño (≤ 420px) ───────────────────── */
-@media (max-width: 420px) {
-    .tablero { grid-template-columns: repeat(4, 55px); grid-template-rows: repeat(4, 55px); gap: 6px; }
-    .logo-empresa { height: 50px; }
-}
-
-/* ── Altura insuficiente (portátiles pequeños / móvil horizontal) */
-@media (max-height: 700px) {
-    body { justify-content: flex-start; padding-top: 15px; }
-    .tablero { grid-template-columns: repeat(4, 80px); grid-template-rows: repeat(4, 80px); gap: 8px; }
-    .panel-control { padding: 0.5rem 1rem; margin-bottom: 0.5rem; }
-    .logo-empresa  { height: 70px; }
-    .texto-latido  { font-size: 3rem; }
-    .titulo-principal { margin-bottom: 0.5rem; }
-}
 @media (max-height: 500px) {
-    .tablero { grid-template-columns: repeat(4, 60px); grid-template-rows: repeat(4, 60px); }
     .panel-control { display: none; }
-    .logo-empresa  { height: 40px; }
 }
