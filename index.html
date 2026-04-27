@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria PRO - Kiosco 55"</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button id="btn-volver" class="btn-volver"> INICIO</button>
+    <img src="img/5.png" alt="Logo Lenzelta" class="logo-empresa">
+<dialog id="screensaver" class="screensaver-panel">
+        <h1 class="texto-latido">¿TIENES BUENA MEMORIA?<br>TOCA LA PANTALLA PARA DEMOSTRARLO 🐾</h1>
+    </dialog>
+    <dialog id="modal-seleccion" open class="glass-panel">
+        <div class="modal-content">
+            <h2>¿CUÁNTOS JUGADORES?</h2>
+            <p class="subtitle">TOCA EL NÚMERO DE PARTICIPANTES</p>
+            
+            <div class="botones-seleccion">
+                <button class="btn-neon btn-num" data-num="1"> 1</button> <button class="btn-neon btn-num" data-num="2"> 2</button>
+                <button class="btn-neon btn-num" data-num="3"> 3</button>
+                <button class="btn-neon btn-num" data-num="4"> 4</button>
+                <button class="btn-neon btn-num" data-num="5"> 5</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="modal-jugador" class="glass-panel">
+        <div class="modal-content">
+            <h2>NUEVO JUGADOR</h2>
+            <p class="subtitle">Turno del Jugador <span id="contador-jugadores" class="neon-text">1</span> de <span id="total-jugadores-display">--</span></p>
+            
+            <form id="form-jugador" method="dialog">
+                <input type="text" id="nombre-jugador" placeholder="TOCA PARA ESCRIBIR..." readonly>
+                
+                <div class="teclado-virtual">
+                    <div class="fila-teclado">
+                        <button type="button" class="tecla">Q</button><button type="button" class="tecla">W</button><button type="button" class="tecla">E</button><button type="button" class="tecla">R</button><button type="button" class="tecla">T</button><button type="button" class="tecla">Y</button><button type="button" class="tecla">U</button><button type="button" class="tecla">I</button><button type="button" class="tecla">O</button><button type="button" class="tecla">P</button>
+                    </div>
+                    <div class="fila-teclado">
+                        <button type="button" class="tecla">A</button><button type="button" class="tecla">S</button><button type="button" class="tecla">D</button><button type="button" class="tecla">F</button><button type="button" class="tecla">G</button><button type="button" class="tecla">H</button><button type="button" class="tecla">J</button><button type="button" class="tecla">K</button><button type="button" class="tecla">L</button><button type="button" class="tecla">Ñ</button>
+                    </div>
+                    <div class="fila-teclado">
+                        <button type="button" class="tecla">Z</button><button type="button" class="tecla">X</button><button type="button" class="tecla">C</button><button type="button" class="tecla">V</button><button type="button" class="tecla">B</button><button type="button" class="tecla">N</button><button type="button" class="tecla">M</button><button type="button" class="tecla tecla-especial" data-accion="borrar">⌫</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-neon">🩺 ENTRAR A CONSULTA</button>
+            </form>
+        </div>
+    </dialog>
+
+    <h1 class="titulo-principal neon-text">MEMORY-LENZELTA</h1>
+
+    <header class="panel-control glass-panel">
+        <div class="info-jugador">
+            <span>JUGADOR: </span>
+            <strong id="display-nombre">---</strong>
+        </div>
+        <div class="info-tiempo">
+            <span>TIEMPO: </span>
+            <strong id="display-tiempo">0.0s</strong>
+        </div>
+    </header>
+
+    <main id="tablero" class="tablero"></main>
+
+    <dialog id="modal-resultados" class="glass-panel">
+        <div class="modal-content">
+            <h2>🏆 PODIO FINAL</h2>
+            <div id="lista-resultados"></div>
+            <button id="btn-reiniciar" class="btn-neon">🔄 JUGAR DE NUEVO</button>
+        </div>
+    </dialog>
+
+    <template id="template-carta">
+        <div class="carta">
+            <div class="carta-cara carta-frente"></div>
+            <div class="carta-cara carta-dorso"></div>
+        </div>
+    </template>
+
+    <script src="main.js"></script>
+</body>
+</html>
