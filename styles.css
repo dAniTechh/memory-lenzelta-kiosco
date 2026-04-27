@@ -168,6 +168,12 @@ body.modo-juego .screensaver-panel { display: none !important; }
 /* =========================================
    5. MODALES Y FORMULARIOS
 ========================================= */
+/* =========================================
+   5. MODALES Y FORMULARIOS
+========================================= */
+/* =========================================
+   5. MODALES Y FORMULARIOS
+========================================= */
 dialog {
     margin:    auto;
     padding:   clamp(1.5rem, 4vmin, 4rem);
@@ -178,9 +184,9 @@ dialog {
 }
 
 dialog::backdrop {
-    background:              rgba(0, 0, 0, 0.85);
-    backdrop-filter:         var(--blur-md);
-    -webkit-backdrop-filter: var(--blur-md);
+    background:              transparent; /* Quitamos lo oscuro */
+    backdrop-filter:         none;        /* Quitamos el desenfoque */
+    -webkit-backdrop-filter: none;
 }
 
 dialog h2 {
