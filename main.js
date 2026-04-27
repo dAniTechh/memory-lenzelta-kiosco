@@ -9,14 +9,15 @@ class JuegoMemoria {
     #jugadorActual = 1;
     #resultados = [];
     #tableroVirtual = [];
-    
     #cartasLevantadas = [];
     #parejasEncontradas = 0;
     #bloqueado = false;
-    
     #tiempoInicio = 0;
     #rafId = null;
-    #idleTimeout = null; // Controla el tiempo sin tocar la pantalla
+    #idleTimeout = null; 
+    
+    // Controlador de la animación 3D
+    #intervaloAtraccion = null;
 
     #ui = {};
     #audio = {};
@@ -26,8 +27,8 @@ class JuegoMemoria {
         this.#inicializarAudio();
         this.#vincularEventos();
 
-        // Al iniciar, mostramos el screensaver en lugar del menú normal
         this.#ui.screensaver.showModal();
+        this.#iniciarModoAtraccion(); // Iniciamos el efecto 3D
         this.#iniciarControlInactividad();
     }
 
@@ -38,6 +39,7 @@ class JuegoMemoria {
         
         this.#ui = {
             screensaver: $('#screensaver'), 
+            screensaverCartas: $('#screensaver-cartas'), // <- Nuevo contenedor
             modalSeleccion: $('#modal-seleccion'),
             btnsNum: document.querySelectorAll('.btn-num'),
             modalJugador: $('#modal-jugador'),
@@ -54,7 +56,6 @@ class JuegoMemoria {
             btnReiniciar: $('#btn-reiniciar'),
             btnTerminar: $('#btn-terminar'),
             btnVolver: $('#btn-volver'),
-            // NUEVOS BOTONES Y MODALES DE RÉCORDS:
             btnRecords: $('#btn-records'),
             modalRecords: $('#modal-records'),
             listaRecordsHistoricos: $('#lista-records-historicos'),
@@ -86,15 +87,62 @@ class JuegoMemoria {
         resetearTemporizador();
     }
 
+    // ==========================================
+    // 🎇 MAGIA VISUAL: MODO ATRACCIÓN PREMIUM
+    // ==========================================
+    #iniciarModoAtraccion() {
+        this.#ui.screensaverCartas.innerHTML = '';
+        
+        const crearCarta = () => {
+            if (!this.#ui.screensaver.open) return; // Parar si ya están jugando
+            
+            const carta = document.createElement('div');
+            carta.className = 'carta-flotante';
+            
+            // Elegimos entre el logo (5.png) o una imagen de carta aleatoria
+            const imgRandom = JuegoMemoria.#ICONOS[Math.floor(Math.random() * JuegoMemoria.#ICONOS.length)];
+            carta.style.backgroundImage = Math.random() > 0.35 ? `url('${imgRandom}')` : `url('img/5.png')`;
+            
+            // Posición X aleatoria, duración aleatoria y tamaño aleatorio
+            carta.style.left = `${Math.random() * 95}%`;
+            
+            const duracion = 12 + Math.random() * 18; // Flotan entre 12 y 30 segundos
+            carta.style.animationDuration = `${duracion}s`;
+            
+            const size = 70 + Math.random() * 110; // Tamaño entre 70px y 180px
+            carta.style.width = `${size}px`;
+            carta.style.height = `${size}px`;
+
+            this.#ui.screensaverCartas.appendChild(carta);
+
+            // Destruir la carta cuando llegue arriba para no petar la memoria
+            setTimeout(() => {
+                if (carta.parentNode) carta.parentNode.removeChild(carta);
+            }, duracion * 1000);
+        };
+
+        // Generar 5 cartas al instante, escalonadas
+        for (let i = 0; i < 5; i++) {
+            setTimeout(crearCarta, i * 1500);
+        }
+
+        // Seguir fabricando una carta nueva cada 3 segundos infinitamente
+        this.#intervaloAtraccion = setInterval(crearCarta, 3000);
+    }
+
+    #detenerModoAtraccion() {
+        clearInterval(this.#intervaloAtraccion);
+        this.#ui.screensaverCartas.innerHTML = ''; // Limpiar el DOM visualmente
+    }
+
     #vincularEventos() {
         this.#ui.btnVolver.addEventListener('click', () => this.#volverAlInicio());
-        
-        // Eventos del Salón de la Fama
         this.#ui.btnRecords.addEventListener('click', () => this.#mostrarRecordsHistoricos());
         this.#ui.btnCerrarRecords.addEventListener('click', () => this.#ui.modalRecords.close());
 
         this.#ui.screensaver.addEventListener('click', () => {
             this.#ui.screensaver.close();
+            this.#detenerModoAtraccion(); // Matamos la animación al jugar
             document.body.classList.add('modo-juego'); 
             this.#ui.modalSeleccion.showModal();
         });
@@ -127,7 +175,7 @@ class JuegoMemoria {
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
         historico.push({ nombre, tiempo });
         historico.sort((a, b) => a.tiempo - b.tiempo);
-        historico = historico.slice(0, 10); // Solo los 10 mejores
+        historico = historico.slice(0, 10);
         localStorage.setItem('lenzelta_records', JSON.stringify(historico));
     }
 
@@ -154,7 +202,6 @@ class JuegoMemoria {
     #volverAlInicio() {
         cancelAnimationFrame(this.#rafId);
         
-        // ¡MAGIA!: Volvemos a esconder controles y mostramos récords
         this.#ui.btnVolver.style.display = 'none';
         this.#ui.panelControl.style.display = 'none';
         this.#ui.btnRecords.style.display = 'block';
@@ -181,16 +228,12 @@ class JuegoMemoria {
         
         this.#maxJugadores = val;
         this.#ui.modalSeleccion.close();
-        
-        // Ocultamos el botón de récords al ir a poner el nombre
         this.#ui.btnRecords.style.display = 'none';
-        
         this.#actualizarUIJugador();
     }
 
     #manejarTecladoVirtual(e) {
         if (!e.target.matches('.tecla')) return;
-        
         if (e.target.dataset.accion === 'borrar') {
             this.#ui.inputNombre.value = this.#ui.inputNombre.value.slice(0, -1);
         } else {
@@ -331,8 +374,6 @@ class JuegoMemoria {
         audioElement.play().catch(console.warn);
     }
 
-    // --- 4. CÁLCULOS FINALES ---
-
     #actualizarCronometro() {
         const segundos = ((performance.now() - this.#tiempoInicio) / 1000).toFixed(1);
         this.#ui.displayTiempo.textContent = `${segundos}s`;
@@ -346,8 +387,6 @@ class JuegoMemoria {
         const nombre = this.#ui.displayNombre.textContent;
 
         this.#resultados.push({ nombre: nombre, tiempo: tiempoFinal });
-        
-        // Guardamos el tiempo de esta persona en el Récord Histórico
         this.#guardarRecordLocal(nombre, tiempoFinal);
 
         if (this.#jugadorActual < this.#maxJugadores) {
@@ -391,8 +430,6 @@ class JuegoMemoria {
         `;
         
         this.#ui.modalResultados.showModal();
-        
-        // Al mostrar los resultados, encendemos también el botón de récords para que curioseen
         this.#ui.btnRecords.style.display = 'block';
     }
 }

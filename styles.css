@@ -455,3 +455,43 @@ input[type="text"] {
 @media (max-height: 500px) {
     .panel-control { display: none; }
 }
+
+
+
+/* =========================================
+   13. MODO ATRACCIÓN PREMIUM (CARTAS FLOTANTES 3D)
+========================================= */
+#screensaver-cartas {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    z-index: 1; /* Detrás del título */
+    perspective: 1200px;
+    pointer-events: none; /* Que no bloqueen tu dedo al tocar la pantalla */
+}
+
+.carta-flotante {
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    animation: flotar3D linear forwards;
+    border: 2px solid rgba(0, 228, 124, 0.5); /* Borde neón sutil */
+    background-color: #000;
+}
+
+@keyframes flotar3D {
+    0% {
+        transform: translateY(110vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+        opacity: 0;
+    }
+    10% { opacity: 0.85; }
+    90% { opacity: 0.85; }
+    100% {
+        /* Suben hasta arriba dando vueltas en todos los ejes */
+        transform: translateY(-40vh) rotateX(360deg) rotateY(720deg) rotateZ(180deg);
+        opacity: 0;
+    }
+}
