@@ -221,9 +221,9 @@ class JuegoMemoria {
         this.#ui.modalResultados.close();
         this.#ui.modalSeleccion.showModal();
     }
-
     #seleccionarJugadores(e) {
-        const val = parseInt(e.target.dataset.num, 10);
+        const val = parseInt(e.currentTarget.dataset.num, 10);
+    
         if (Number.isNaN(val) || val < 1 || val > 5) return; 
         
         this.#maxJugadores = val;
