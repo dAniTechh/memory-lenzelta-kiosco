@@ -85,7 +85,7 @@ body.modo-juego .screensaver-panel { display: none !important; }
    4. PANEL DE CONTROL Y TABLERO
 ========================================= */
 .panel-control {
-    display:         flex;
+    display:         none;
     justify-content: space-between;
     width:           95%;
     max-width:       1000px;

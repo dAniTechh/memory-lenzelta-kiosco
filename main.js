@@ -4,7 +4,7 @@ class JuegoMemoria {
     static #TIEMPO_TRANSICION = 1500;
     // Sustituidos los emojis por las rutas a tus imágenes PNG
     // Ahora apuntan a tu carpeta 'img'
-    static #ICONOS = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/5.png', 'img/6.png', 'img/7.png', 'img/8.png'];
+    static #ICONOS = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/15.png', 'img/6.png', 'img/7.png', 'img/8.png'];
 
     // --- ESTADO PRIVADO ---
     #maxJugadores = 0;
@@ -49,6 +49,7 @@ class JuegoMemoria {
             totalJugadoresDisplay: $('#total-jugadores-display'),
             displayNombre: $('#display-nombre'),
             displayTiempo: $('#display-tiempo'),
+            panelControl: $('.panel-control'),
             tablero: $('#tablero'),
             modalResultados: $('#modal-resultados'),
             listaResultados: $('#lista-resultados'),
@@ -130,6 +131,7 @@ class JuegoMemoria {
         
         // ¡MAGIA!: Volvemos a esconder el botón al volver al menú
         this.#ui.btnVolver.style.display = 'none';
+        this.#ui.panelControl.style.display = 'none';
         
         // 2. Reseteamos toda la memoria de la partida actual
         this.#maxJugadores = 0;
@@ -219,6 +221,7 @@ class JuegoMemoria {
         
         // ¡MAGIA!: Mostramos el botón solo cuando empieza el juego
         this.#ui.btnVolver.style.display = 'block';
+        this.#ui.panelControl.style.display = 'flex';
         
         this.#parejasEncontradas = 0;
         this.#cartasLevantadas = [];
