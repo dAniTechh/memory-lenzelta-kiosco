@@ -396,6 +396,7 @@ input[type="text"] {
    10. BOTÓN VOLVER AL INICIO
 ========================================= */
 .btn-volver {
+    display: none;
     position:                fixed;
     top:                     clamp(10px, 3vh, 30px);
     left:                    clamp(10px, 3vw, 30px);
