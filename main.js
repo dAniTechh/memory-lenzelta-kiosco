@@ -2,8 +2,6 @@ class JuegoMemoria {
     // --- CONSTANTES GLOBALES ---
     static #TIEMPO_VISTA_CARTA = 1000;
     static #TIEMPO_TRANSICION = 1500;
-    // Sustituidos los emojis por las rutas a tus imágenes PNG
-    // Ahora apuntan a tu carpeta 'img'
     static #ICONOS = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/15.png', 'img/6.png', 'img/7.png', 'img/8.png'];
 
     // --- ESTADO PRIVADO ---
@@ -39,7 +37,7 @@ class JuegoMemoria {
         const $ = (selector) => document.querySelector(selector);
         
         this.#ui = {
-            screensaver: $('#screensaver'), // Registramos el nuevo modal
+            screensaver: $('#screensaver'), 
             modalSeleccion: $('#modal-seleccion'),
             btnsNum: document.querySelectorAll('.btn-num'),
             modalJugador: $('#modal-jugador'),
@@ -55,7 +53,12 @@ class JuegoMemoria {
             listaResultados: $('#lista-resultados'),
             btnReiniciar: $('#btn-reiniciar'),
             btnTerminar: $('#btn-terminar'),
-            btnVolver: $('#btn-volver') 
+            btnVolver: $('#btn-volver'),
+            // NUEVOS BOTONES Y MODALES DE RÉCORDS:
+            btnRecords: $('#btn-records'),
+            modalRecords: $('#modal-records'),
+            listaRecordsHistoricos: $('#lista-records-historicos'),
+            btnCerrarRecords: $('#btn-cerrar-records')
         };
     }
 
@@ -71,14 +74,11 @@ class JuegoMemoria {
     #iniciarControlInactividad() {
         const resetearTemporizador = () => {
             clearTimeout(this.#idleTimeout);
-            
-            // 120000 ms = 2 minutos. (Pon 5000 para hacer pruebas rápidas)
             this.#idleTimeout = setTimeout(() => {
                 location.reload(); 
             }, 120000); 
         };
 
-        // Escuchamos cualquier toque en la pantalla
         ['click', 'touchstart', 'keydown'].forEach(evento => {
             document.addEventListener(evento, resetearTemporizador);
         });
@@ -88,14 +88,14 @@ class JuegoMemoria {
 
     #vincularEventos() {
         this.#ui.btnVolver.addEventListener('click', () => this.#volverAlInicio());
+        
+        // Eventos del Salón de la Fama
+        this.#ui.btnRecords.addEventListener('click', () => this.#mostrarRecordsHistoricos());
+        this.#ui.btnCerrarRecords.addEventListener('click', () => this.#ui.modalRecords.close());
 
-        // Quitar screensaver al tocar la pantalla y CAMBIAR EL FONDO
         this.#ui.screensaver.addEventListener('click', () => {
             this.#ui.screensaver.close();
-            
-            // Aquí está la magia: le añadimos una clase al body
             document.body.classList.add('modo-juego'); 
-            
             this.#ui.modalSeleccion.showModal();
         });
 
@@ -111,7 +111,6 @@ class JuegoMemoria {
         this.#ui.tablero.addEventListener('click', (e) => this.#procesarClic(e));
         this.#ui.btnReiniciar.addEventListener('click', () => location.reload());
 
-        // Botón opcional para cortar antes de tiempo
         if (this.#ui.btnTerminar) {
             this.#ui.btnTerminar.addEventListener('click', () => {
                 this.#ui.modalJugador.close();
@@ -119,21 +118,47 @@ class JuegoMemoria {
             });
         }
 
-        // Control de Periféricos (Kiosco y Portátil)
         document.addEventListener('click', (e) => this.#manejarTecladoVirtual(e));
         document.addEventListener('keydown', (e) => this.#manejarTecladoFisico(e));
     }
 
+    // --- SALÓN DE LA FAMA (MEMORIA PERMANENTE) ---
+    #guardarRecordLocal(nombre, tiempo) {
+        let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
+        historico.push({ nombre, tiempo });
+        historico.sort((a, b) => a.tiempo - b.tiempo);
+        historico = historico.slice(0, 10); // Solo los 10 mejores
+        localStorage.setItem('lenzelta_records', JSON.stringify(historico));
+    }
+
+    #mostrarRecordsHistoricos() {
+        let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
+        
+        if (historico.length === 0) {
+            this.#ui.listaRecordsHistoricos.innerHTML = '<div style="font-size: 1.5rem; opacity: 0.5; padding: 20px;">AÚN NO HAY RÉCORDS.<br>¡JUEGA PARA SER EL PRIMERO!</div>';
+        } else {
+            this.#ui.listaRecordsHistoricos.innerHTML = historico.map((r, i) => {
+                let medalla = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`;
+                return `
+                    <div class="fila-otros" style="font-size: 1.5rem; margin-bottom: 8px;">
+                        <span>${medalla} ${r.nombre}</span>
+                        <span style="color: var(--neon-blue); font-weight: 900;">${r.tiempo}s</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        this.#ui.modalRecords.showModal();
+    }
+
     // --- 2. GESTORES DE PERIFÉRICOS E INTERFAZ ---
     #volverAlInicio() {
-        // 1. Detenemos cualquier cronómetro en curso
         cancelAnimationFrame(this.#rafId);
         
-        // ¡MAGIA!: Volvemos a esconder el botón al volver al menú
+        // ¡MAGIA!: Volvemos a esconder controles y mostramos récords
         this.#ui.btnVolver.style.display = 'none';
         this.#ui.panelControl.style.display = 'none';
+        this.#ui.btnRecords.style.display = 'block';
         
-        // 2. Reseteamos toda la memoria de la partida actual
         this.#maxJugadores = 0;
         this.#jugadorActual = 1;
         this.#resultados = [];
@@ -141,26 +166,25 @@ class JuegoMemoria {
         this.#parejasEncontradas = 0;
         this.#bloqueado = false;
         
-        // 3. Limpiamos la pantalla (textos y tablero)
         this.#ui.tablero.innerHTML = '';
         this.#ui.displayTiempo.textContent = '0.0s';
         this.#ui.displayNombre.textContent = '---';
         
-        // 4. Cerramos posibles modales abiertos por si acaso
         this.#ui.modalJugador.close();
         this.#ui.modalResultados.close();
-        
-        // 5. Volvemos a abrir el menú inicial
         this.#ui.modalSeleccion.showModal();
     }
 
     #seleccionarJugadores(e) {
         const val = parseInt(e.target.dataset.num, 10);
-        // Cambiado val < 2 a val < 1
         if (Number.isNaN(val) || val < 1 || val > 5) return; 
         
         this.#maxJugadores = val;
         this.#ui.modalSeleccion.close();
+        
+        // Ocultamos el botón de récords al ir a poner el nombre
+        this.#ui.btnRecords.style.display = 'none';
+        
         this.#actualizarUIJugador();
     }
 
@@ -176,10 +200,10 @@ class JuegoMemoria {
 
     #manejarTecladoFisico(e) {
         if (this.#ui.modalSeleccion.open) {
-            
             if (['1', '2', '3', '4', '5'].includes(e.key)) {
                 this.#maxJugadores = parseInt(e.key, 10);
                 this.#ui.modalSeleccion.close();
+                this.#ui.btnRecords.style.display = 'none';
                 this.#actualizarUIJugador();
             }
             return;
@@ -219,7 +243,6 @@ class JuegoMemoria {
         this.#ui.displayNombre.textContent = nombre;
         this.#ui.modalJugador.close();
         
-        // ¡MAGIA!: Mostramos el botón solo cuando empieza el juego
         this.#ui.btnVolver.style.display = 'block';
         this.#ui.panelControl.style.display = 'flex';
         
@@ -256,7 +279,6 @@ class JuegoMemoria {
             carta.dataset.indice = indice;
             carta.dataset.valor = rutaImagen;
             
-            // Creamos la etiqueta <img> para los PNG
             const img = document.createElement('img');
             img.src = rutaImagen;
             img.className = 'imagen-carta';
@@ -320,11 +342,13 @@ class JuegoMemoria {
     #finalizarTurno() {
         cancelAnimationFrame(this.#rafId);
         
-        const tiempoFinal = ((performance.now() - this.#tiempoInicio) / 1000).toFixed(1);
-        this.#resultados.push({
-            nombre: this.#ui.displayNombre.textContent,
-            tiempo: parseFloat(tiempoFinal)
-        });
+        const tiempoFinal = parseFloat(((performance.now() - this.#tiempoInicio) / 1000).toFixed(1));
+        const nombre = this.#ui.displayNombre.textContent;
+
+        this.#resultados.push({ nombre: nombre, tiempo: tiempoFinal });
+        
+        // Guardamos el tiempo de esta persona en el Récord Histórico
+        this.#guardarRecordLocal(nombre, tiempoFinal);
 
         if (this.#jugadorActual < this.#maxJugadores) {
             this.#jugadorActual++;
@@ -335,13 +359,9 @@ class JuegoMemoria {
     }
 
     #mostrarResultadosFinales() {
-        // 1. Ordenamos resultados (menor tiempo primero)
         this.#resultados.sort((a, b) => a.tiempo - b.tiempo);
-
-        // 2. Tomamos los 3 mejores (o los que haya si son menos)
         const top3 = this.#resultados.slice(0, 3);
         
-        // 3. Reordenamos para el podio visual: [2º, 1º, 3º]
         const ordenPodio = [];
         if (top3[1]) ordenPodio.push({ ...top3[1], pos: 2, clase: 'plata' });
         if (top3[0]) ordenPodio.push({ ...top3[0], pos: 1, clase: 'oro' });
@@ -371,6 +391,9 @@ class JuegoMemoria {
         `;
         
         this.#ui.modalResultados.showModal();
+        
+        // Al mostrar los resultados, encendemos también el botón de récords para que curioseen
+        this.#ui.btnRecords.style.display = 'block';
     }
 }
 

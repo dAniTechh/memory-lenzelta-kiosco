@@ -395,11 +395,12 @@ input[type="text"] {
 /* =========================================
    10. BOTÓN VOLVER AL INICIO
 ========================================= */
-.btn-volver {
-    display: none;
+/* =========================================
+   10. BOTONES SUPERIORES (INICIO Y RÉCORDS)
+========================================= */
+.btn-volver, .btn-records {
     position:                fixed;
     top:                     clamp(10px, 3vh, 30px);
-    left:                    clamp(10px, 3vw, 30px);
     font-size:               var(--fs-sm);
     padding:                 clamp(6px, 1vh, 12px) clamp(12px, 2vw, 24px);
     border-radius:           var(--radius-sm);
@@ -414,9 +415,24 @@ input[type="text"] {
     -webkit-backdrop-filter: var(--blur-sm);
 }
 
-.btn-volver:hover,
-.btn-volver:active { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
+/* El de Volver a la izquierda (oculto en el menú) */
+.btn-volver { 
+    left: clamp(10px, 3vw, 30px); 
+    display: none; 
+}
 
+/* El de Récords a la derecha (visible en el menú) */
+.btn-records { 
+    right: clamp(10px, 3vw, 30px); 
+    display: block; 
+}
+
+.btn-volver:hover, .btn-volver:active,
+.btn-records:hover, .btn-records:active { 
+    background: var(--neon-blue); 
+    color: #000; 
+    box-shadow: 0 0 15px var(--neon-blue); 
+}
 /* =========================================
    11. LOGO EMPRESA
 ========================================= */
