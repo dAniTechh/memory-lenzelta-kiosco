@@ -1,3 +1,81 @@
+/* ============================================================
+   RESET DE INTERACCIONES TÁCTILES Y DE PUNTERO
+   Ideal para apps web, juegos o interfaces sin texto seleccionable
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+    /* Evita la selección de texto al arrastrar el dedo o el ratón */
+    user-select: none;
+    -webkit-user-select: none;
+
+    /* Evita el menú contextual nativo al mantener pulsado (iOS Safari) */
+    -webkit-touch-callout: none;
+
+    /* Evita el zoom con doble toque y mejora la respuesta táctil */
+    touch-action: manipulation;
+
+    /* Elimina el resaltado semitransparente al tocar elementos (Android/iOS) */
+    -webkit-tap-highlight-color: transparent;
+
+    /* Evita el efecto de "rebote" al hacer scroll más allá del límite (iOS) */
+    overscroll-behavior: none;
+
+    /* Mejora el rendimiento del scroll y de animaciones con capas GPU */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* ============================================================
+   RESTAURAR COMPORTAMIENTO NORMAL EN CAMPOS DE FORMULARIO
+   ============================================================ */
+
+input,
+textarea,
+select,
+[contenteditable="true"] {
+    /* Permitir selección de texto donde el usuario necesita escribir o copiar */
+    user-select: auto;
+    -webkit-user-select: auto;
+
+    /* Restaurar el menú contextual (copiar, pegar, seleccionar todo…) */
+    -webkit-touch-callout: default;
+
+    /* Permitir scroll vertical dentro de textareas si el contenido lo necesita */
+    touch-action: pan-y;
+
+    /* Restaurar el cursor de texto */
+    cursor: auto;
+
+    /* Quitar la sombra de autocompletado en WebKit (Chrome, Safari) */
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+    box-shadow: none;
+}
+
+/* ============================================================
+   ELEMENTOS INTERACTIVOS: CURSOR Y RESPUESTA VISUAL LIMPIA
+   ============================================================ */
+
+button,
+a,
+label,
+[role="button"] {
+    /* Cursor de mano en escritorio */
+    cursor: pointer;
+
+    /* Sin outline por defecto; recuerda añadir uno accesible con :focus-visible */
+    outline: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+    /* Outline accesible solo con teclado, no con clic/toque */
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
 /* =========================================
    1. VARIABLES Y SISTEMA DE DISEÑO LÍQUIDO (FLUID DESIGN)
    La magia de clamp(): clamp(Mínimo, Ideal, Máximo)
