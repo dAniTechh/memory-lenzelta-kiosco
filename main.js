@@ -84,7 +84,7 @@ class JuegoMemoria {
         const existeDani = historico.some(r => r.nombre === "Dani" && r.tiempo === 18.9);
         
         if (!existeDani) {
-            historico.push({ nombre: "Dani", tiempo: 16.9 });
+            historico.push({ nombre: "Dani", tiempo: 18.9 });
             historico.sort((a, b) => a.tiempo - b.tiempo);
             historico = historico.slice(0, 10);
             localStorage.setItem('lenzelta_records', JSON.stringify(historico));
