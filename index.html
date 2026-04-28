@@ -4,36 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de Memoria PRO - Kiosco 55"</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <button id="btn-volver" class="btn-volver"> INICIO</button>
-    
-    <dialog id="modal-records" class="glass-panel">
-        <div class="modal-content">
-            <h2>🏆 SALÓN DE LA FAMA</h2>
-            <p class="subtitle">TOP 10 MEJORES TIEMPOS DE LENZELTA</p>
-            <div id="lista-records-historicos" class="resto-clasificacion" style="max-height: 40vh; overflow-y: auto; margin-bottom: 20px;">
-                </div>
-            <button id="btn-cerrar-records" class="btn-neon">CERRAR</button>
-        </div>
-    </dialog>
+    <button class="btn-volver btn-accion-volver"> INICIO</button>
 
     <img src="img/13.png" alt="Logo Lenzelta" class="logo-empresa">
+
+    <aside id="panel-records-izq" class="panel-lateral-records">
+        <h3>🏆 TOP 10 HISTÓRICO</h3>
+        <div id="lista-records-inicio" class="resto-clasificacion">
+            </div>
+    </aside>
     
     <dialog id="screensaver" class="screensaver-panel">
-        <button class="btn-records btn-abrir-records">🏆 RÉCORDS</button>
         <div id="screensaver-cartas"></div>
-        
         <h1 class="texto-latido" style="z-index: 2; position: relative; text-shadow: 0 0 30px #000, 0 0 60px rgba(0,228,124,1);">
             ¿TIENES BUENA MEMORIA?<br>TOCA LA PANTALLA PARA DEMOSTRARLO Y CONSIGUE TU PREMIO 🐾
         </h1>
     </dialog>
 
     <dialog id="modal-seleccion" class="glass-panel">
-        <button class="btn-records btn-abrir-records">🏆 RÉCORDS</button>
         <div class="modal-content">
             <h2>¿CUÁNTOS JUGADORES?</h2>
             <p class="subtitle">TOCA EL NÚMERO DE PARTICIPANTES</p>
@@ -49,6 +41,8 @@
     </dialog>
 
     <dialog id="modal-jugador" class="glass-panel">
+        <button class="btn-volver btn-accion-volver"> INICIO</button>
+        
         <div class="modal-content">
             <h2>NUEVO JUGADOR</h2>
             <p class="subtitle">Turno del Jugador <span id="contador-jugadores" class="neon-text">1</span> de <span id="total-jugadores-display">--</span></p>
@@ -89,7 +83,8 @@
     <main id="tablero" class="tablero"></main>
 
     <dialog id="modal-resultados" class="glass-panel">
-        <button class="btn-records btn-abrir-records">🏆 HISTÓRICO</button>
+        <button class="btn-volver btn-accion-volver"> INICIO</button>
+        
         <div class="modal-content">
             <h2>🏆 PODIO FINAL</h2>
             <div id="lista-resultados"></div>
