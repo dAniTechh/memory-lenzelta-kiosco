@@ -56,7 +56,8 @@ class JuegoMemoria {
             btnReiniciar: $('#btn-reiniciar'),
             btnTerminar: $('#btn-terminar'),
             btnVolver: $('#btn-volver'),
-            btnRecords: $('#btn-records'),
+            // CAMBIO 1: Buscamos todos los botones clonados dentro de las cajas
+            btnsRecords: document.querySelectorAll('.btn-abrir-records'),
             modalRecords: $('#modal-records'),
             listaRecordsHistoricos: $('#lista-records-historicos'),
             btnCerrarRecords: $('#btn-cerrar-records')
@@ -137,7 +138,15 @@ class JuegoMemoria {
 
     #vincularEventos() {
         this.#ui.btnVolver.addEventListener('click', () => this.#volverAlInicio());
-        this.#ui.btnRecords.addEventListener('click', () => this.#mostrarRecordsHistoricos());
+        
+        // CAMBIO 2: Le damos la función a TODOS los botones de récord
+        this.#ui.btnsRecords.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evita que la pantalla crea que queremos jugar
+                this.#mostrarRecordsHistoricos();
+            });
+        });
+        
         this.#ui.btnCerrarRecords.addEventListener('click', () => this.#ui.modalRecords.close());
 
         this.#ui.screensaver.addEventListener('click', () => {
@@ -204,7 +213,8 @@ class JuegoMemoria {
         
         this.#ui.btnVolver.style.display = 'none';
         this.#ui.panelControl.style.display = 'none';
-        this.#ui.btnRecords.style.display = 'block';
+        // CAMBIO 3: Mostrar todos los botones de récord
+        this.#ui.btnsRecords.forEach(btn => btn.style.display = 'block');
         
         this.#maxJugadores = 0;
         this.#jugadorActual = 1;
@@ -228,7 +238,8 @@ class JuegoMemoria {
         
         this.#maxJugadores = val;
         this.#ui.modalSeleccion.close();
-        this.#ui.btnRecords.style.display = 'none';
+        // Ocultar botones de récord
+        this.#ui.btnsRecords.forEach(btn => btn.style.display = 'none');
         this.#actualizarUIJugador();
     }
 
@@ -246,7 +257,8 @@ class JuegoMemoria {
             if (['1', '2', '3', '4', '5'].includes(e.key)) {
                 this.#maxJugadores = parseInt(e.key, 10);
                 this.#ui.modalSeleccion.close();
-                this.#ui.btnRecords.style.display = 'none';
+                // Ocultar botones de récord
+                this.#ui.btnsRecords.forEach(btn => btn.style.display = 'none');
                 this.#actualizarUIJugador();
             }
             return;
@@ -430,7 +442,8 @@ class JuegoMemoria {
         `;
         
         this.#ui.modalResultados.showModal();
-        this.#ui.btnRecords.style.display = 'block';
+        // Mostrar botones de récord
+        this.#ui.btnsRecords.forEach(btn => btn.style.display = 'block');
     }
 }
 

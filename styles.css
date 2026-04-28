@@ -165,12 +165,7 @@ body.modo-juego .screensaver-panel { display: none !important; }
     pointer-events: none;
 }
 
-/* =========================================
-   5. MODALES Y FORMULARIOS
-========================================= */
-/* =========================================
-   5. MODALES Y FORMULARIOS
-========================================= */
+
 /* =========================================
    5. MODALES Y FORMULARIOS
 ========================================= */
@@ -398,39 +393,36 @@ input[type="text"] {
     to   { transform: scale(1.05); text-shadow: 0 0 40px rgba(var(--neon-blue-rgb), 1); }
 }
 
-/* =========================================
-   10. BOTÓN VOLVER AL INICIO
-========================================= */
+
 /* =========================================
    10. BOTONES SUPERIORES (INICIO Y RÉCORDS)
 ========================================= */
 .btn-volver, .btn-records {
-    position:                fixed;
-    top:                     clamp(10px, 3vh, 30px);
+    position:                fixed !important; /* Ancla forzada a la pantalla */
+    top:                     clamp(15px, 3vh, 30px) !important; /* Pegados arriba */
     font-size:               var(--fs-sm);
-    padding:                 clamp(6px, 1vh, 12px) clamp(12px, 2vw, 24px);
+    padding:                 clamp(8px, 1vh, 12px) clamp(16px, 2vw, 24px);
     border-radius:           var(--radius-sm);
     background:              rgba(0, 0, 0, 0.6);
     border:                  2px solid var(--neon-blue);
     color:                   var(--neon-blue);
     cursor:                  pointer;
-    z-index:                 100;
+    z-index:                 999999 !important; /* Por encima de cualquier cosa */
     transition:              all 0.2s ease;
     font-weight:             700;
     backdrop-filter:         var(--blur-sm);
     -webkit-backdrop-filter: var(--blur-sm);
 }
 
-/* El de Volver a la izquierda (oculto en el menú) */
+/* El de Volver a la esquina SUPERIOR IZQUIERDA */
 .btn-volver { 
-    left: clamp(10px, 3vw, 30px); 
+    left: clamp(15px, 3vw, 30px) !important; 
     display: none; 
 }
 
-/* El de Récords a la derecha (visible en el menú) */
+/* El de Récords a la esquina SUPERIOR DERECHA */
 .btn-records { 
-    right: clamp(10px, 3vw, 30px); 
-    display: block; 
+    right: clamp(15px, 3vw, 30px) !important; 
 }
 
 .btn-volver:hover, .btn-volver:active,

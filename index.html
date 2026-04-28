@@ -10,7 +10,6 @@
 </head>
 <body>
     <button id="btn-volver" class="btn-volver"> INICIO</button>
-    <button id="btn-records" class="btn-records">🏆 RÉCORDS</button>
     
     <dialog id="modal-records" class="glass-panel">
         <div class="modal-content">
@@ -24,20 +23,24 @@
 
     <img src="img/13.png" alt="Logo Lenzelta" class="logo-empresa">
     
-   <dialog id="screensaver" class="screensaver-panel">
+    <dialog id="screensaver" class="screensaver-panel">
+        <button class="btn-records btn-abrir-records">🏆 RÉCORDS</button>
         <div id="screensaver-cartas"></div>
         
         <h1 class="texto-latido" style="z-index: 2; position: relative; text-shadow: 0 0 30px #000, 0 0 60px rgba(0,228,124,1);">
             ¿TIENES BUENA MEMORIA?<br>TOCA LA PANTALLA PARA DEMOSTRARLO Y CONSIGUE TU PREMIO 🐾
         </h1>
     </dialog>
-    <dialog id="modal-seleccion"  class="glass-panel">
+
+    <dialog id="modal-seleccion" class="glass-panel">
+        <button class="btn-records btn-abrir-records">🏆 RÉCORDS</button>
         <div class="modal-content">
             <h2>¿CUÁNTOS JUGADORES?</h2>
             <p class="subtitle">TOCA EL NÚMERO DE PARTICIPANTES</p>
             
             <div class="botones-seleccion">
-                <button class="btn-neon btn-num" data-num="1"> 1</button> <button class="btn-neon btn-num" data-num="2"> 2</button>
+                <button class="btn-neon btn-num" data-num="1"> 1</button> 
+                <button class="btn-neon btn-num" data-num="2"> 2</button>
                 <button class="btn-neon btn-num" data-num="3"> 3</button>
                 <button class="btn-neon btn-num" data-num="4"> 4</button>
                 <button class="btn-neon btn-num" data-num="5"> 5</button>
@@ -86,6 +89,7 @@
     <main id="tablero" class="tablero"></main>
 
     <dialog id="modal-resultados" class="glass-panel">
+        <button class="btn-records btn-abrir-records">🏆 HISTÓRICO</button>
         <div class="modal-content">
             <h2>🏆 PODIO FINAL</h2>
             <div id="lista-resultados"></div>
