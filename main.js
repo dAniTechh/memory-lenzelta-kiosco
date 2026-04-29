@@ -1,5 +1,6 @@
 class JuegoMemoria {
-    static #TIEMPO_VISTA_CARTA = 1000;
+    // 🚩 TIEMPO REDUCIDO AL MÍNIMO (de 1000 a 350)
+    static #TIEMPO_VISTA_CARTA = 350; 
     static #TIEMPO_TRANSICION = 1500;
     static #ICONOS = ['img/1.png', 'img/2.png', 'img/13.png', 'img/6.png', 'img/15.png', 'img/7.png', 'img/11.png', 'img/14.png'];
 
@@ -23,10 +24,10 @@ class JuegoMemoria {
         this.#inicializarAudio();
         this.#vincularEventos();
 
-        this.#asegurarRecordDani(); 
+        // 🚩 LLAMAMOS A LA NUEVA FUNCIÓN DE HENAR
+        this.#asegurarRecordHenar(); 
         
         this.#actualizarTop10Inicio();
-        // Usamos .show() en lugar de .showModal() para no bloquear el scroll
         this.#ui.screensaver.show();
         this.#iniciarModoAtraccion(); 
         this.#iniciarControlInactividad();
@@ -77,15 +78,22 @@ class JuegoMemoria {
         resetearTemporizador();
     }
 
-    #asegurarRecordDani() {
+    // 🚩 NUEVA LÓGICA DE RÉCORDS INICIALES
+    #asegurarRecordHenar() {
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
-        const existeDani = historico.some(r => r.nombre === "Dani" && r.tiempo === 18.9);
         
-        if (!existeDani) {
-            historico.push({ nombre: "Dani", tiempo: 18.9 });
-            historico.sort((a, b) => a.tiempo - b.tiempo);
-            localStorage.setItem('lenzelta_records', JSON.stringify(historico));
+        // 1. Borramos cualquier registro que se llame "Dani"
+        historico = historico.filter(r => r.nombre !== "Dani");
+        
+        // 2. Comprobamos si ya está "henar" para no duplicarla
+        const existeHenar = historico.some(r => r.nombre === "henar" && r.tiempo === 18.3);
+        
+        if (!existeHenar) {
+            historico.push({ nombre: "henar", tiempo: 18.3 });
         }
+        
+        historico.sort((a, b) => a.tiempo - b.tiempo);
+        localStorage.setItem('lenzelta_records', JSON.stringify(historico));
     }
 
     #iniciarModoAtraccion() {
@@ -130,7 +138,7 @@ class JuegoMemoria {
             document.body.classList.add('modo-juego'); 
             
             this.#ui.panelRecordsIzq.style.display = 'flex';
-            this.#ui.modalSeleccion.show(); // Cambiado a .show()
+            this.#ui.modalSeleccion.show(); 
         });
 
         this.#ui.btnsNum.forEach(btn => btn.addEventListener('click', (e) => this.#seleccionarJugadores(e)));
@@ -153,7 +161,6 @@ class JuegoMemoria {
         document.addEventListener('click', (e) => this.#manejarTecladoVirtual(e));
         document.addEventListener('keydown', (e) => this.#manejarTecladoFisico(e));
 
-        // 🚀 COMANDO SECRETO PARA DESCARGAR EXCEL (Shift + Alt + S)
         document.addEventListener('keydown', (e) => {
             if (e.shiftKey && e.altKey && e.code === 'KeyS') {
                 this.#descargarLogAutomatico();
@@ -162,13 +169,11 @@ class JuegoMemoria {
     }
 
     #guardarRecordLocal(nombre, tiempo) {
-        // 1. Guardar en el Ranking Infinito Visual
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
         historico.push({ nombre, tiempo });
         historico.sort((a, b) => a.tiempo - b.tiempo);
         localStorage.setItem('lenzelta_records', JSON.stringify(historico));
 
-        // 2. Guardar en el Log Secreto con hora exacta
         let logTarde = JSON.parse(localStorage.getItem('log_completo_tarde')) || [];
         logTarde.push({
             nombre: nombre,
@@ -186,8 +191,7 @@ class JuegoMemoria {
         if (historico.length === 0) {
             this.#ui.listaRecordsInicio.innerHTML = '<div style="opacity: 0.5; padding: 10px; text-align: center;">AÚN NO HAY RÉCORDS.</div>';
         } else {
-            // Mostramos máximo 100 para no laggear, pero se guardan todos
-            const topDisplay = historico.slice(0, 100);
+            const topDisplay = historico.slice(0, 200);
             
             this.#ui.listaRecordsInicio.innerHTML = topDisplay.map((r, i) => {
                 let medalla = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`;
@@ -201,7 +205,6 @@ class JuegoMemoria {
         }
     }
 
-    // 🚀 MÉTODO PARA EXPORTAR CSV
     #descargarLogAutomatico() {
         const datos = JSON.parse(localStorage.getItem('log_completo_tarde')) || [];
         if (datos.length === 0) return alert("Aún no hay jugadores registrados hoy.");
@@ -244,7 +247,7 @@ class JuegoMemoria {
         this.#actualizarTop10Inicio(); 
         
         this.#ui.panelRecordsIzq.style.display = 'flex';
-        this.#ui.modalSeleccion.show(); // Cambiado a .show()
+        this.#ui.modalSeleccion.show(); 
     }
 
     #seleccionarJugadores(e) {
@@ -302,7 +305,7 @@ class JuegoMemoria {
         if (this.#ui.btnTerminar) {
             this.#ui.btnTerminar.style.display = this.#jugadorActual > 1 ? 'block' : 'none';
         }
-        this.#ui.modalJugador.show(); // Cambiado a .show()
+        this.#ui.modalJugador.show(); 
     }
 
     #iniciarPartida() {
@@ -445,7 +448,7 @@ class JuegoMemoria {
             </div>
         `;
         
-        this.#ui.modalResultados.show(); // Cambiado a .show()
+        this.#ui.modalResultados.show(); 
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block'); 
     }
 }
