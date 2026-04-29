@@ -1,6 +1,7 @@
 class JuegoMemoria {
     static #TIEMPO_VISTA_CARTA = 1000;
     static #TIEMPO_TRANSICION = 1500;
+    // Tus nuevos iconos
     static #ICONOS = ['img/1.png', 'img/2.png', 'img/13.png', 'img/6.png', 'img/15.png', 'img/7.png', 'img/11.png', 'img/14.png'];
 
     #maxJugadores = 0;
@@ -23,7 +24,7 @@ class JuegoMemoria {
         this.#inicializarAudio();
         this.#vincularEventos();
 
-        this.#asegurarRecordDani(); // 🚀 INYECTA LA MARCA DEL CREADOR
+        this.#asegurarRecordDani(); // 🚀 Mantiene la marca del creador
         
         this.#actualizarTop10Inicio();
         this.#ui.screensaver.showModal();
@@ -76,17 +77,13 @@ class JuegoMemoria {
         resetearTemporizador();
     }
 
-    // --- MARCA FIJA DEL CREADOR ---
     #asegurarRecordDani() {
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
-        
-        // Comprueba si ya está Dani metido para no duplicarlo en cada recarga
         const existeDani = historico.some(r => r.nombre === "Dani" && r.tiempo === 18.9);
         
         if (!existeDani) {
             historico.push({ nombre: "Dani", tiempo: 18.9 });
             historico.sort((a, b) => a.tiempo - b.tiempo);
-            historico = historico.slice(0, 10);
             localStorage.setItem('lenzelta_records', JSON.stringify(historico));
         }
     }
@@ -98,7 +95,10 @@ class JuegoMemoria {
             const carta = document.createElement('div');
             carta.className = 'carta-flotante';
             const imgRandom = JuegoMemoria.#ICONOS[Math.floor(Math.random() * JuegoMemoria.#ICONOS.length)];
+            
+            // 🚩 RESTAURADO: Se mantiene la lógica de img/5.png
             carta.style.backgroundImage = Math.random() > 0.35 ? `url('${imgRandom}')` : `url('img/5.png')`;
+            
             carta.style.left = `${Math.random() * 95}%`;
             const duracion = 12 + Math.random() * 18; 
             carta.style.animationDuration = `${duracion}s`;
@@ -129,7 +129,6 @@ class JuegoMemoria {
             this.#ui.screensaver.close();
             this.#detenerModoAtraccion(); 
             document.body.classList.add('modo-juego'); 
-            
             this.#ui.panelRecordsIzq.style.display = 'flex';
             this.#ui.modalSeleccion.showModal();
         });
@@ -153,23 +152,44 @@ class JuegoMemoria {
 
         document.addEventListener('click', (e) => this.#manejarTecladoVirtual(e));
         document.addEventListener('keydown', (e) => this.#manejarTecladoFisico(e));
+
+        // 🚀 COMANDO SECRETO: Shift + Alt + S para descargar el Excel de la tarde
+        document.addEventListener('keydown', (e) => {
+            if (e.shiftKey && e.altKey && e.code === 'KeyS') {
+                this.#descargarLogAutomatico();
+            }
+        });
     }
 
     #guardarRecordLocal(nombre, tiempo) {
+        // 1. Guardar en el Ranking Visual (Infinito, sin .slice(0,10))
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
         historico.push({ nombre, tiempo });
         historico.sort((a, b) => a.tiempo - b.tiempo);
-        historico = historico.slice(0, 10);
         localStorage.setItem('lenzelta_records', JSON.stringify(historico));
+
+        // 2. Guardar en el Log de la tarde (con hora para tu control interno)
+        let logTarde = JSON.parse(localStorage.getItem('log_completo_tarde')) || [];
+        logTarde.push({
+            nombre: nombre,
+            tiempo: tiempo,
+            hora: new Date().toLocaleTimeString()
+        });
+        localStorage.setItem('log_completo_tarde', JSON.stringify(logTarde));
+
         this.#actualizarTop10Inicio(); 
     }
 
     #actualizarTop10Inicio() {
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
+        
         if (historico.length === 0) {
-            this.#ui.listaRecordsInicio.innerHTML = '<div style="opacity: 0.5; padding: 10px; text-align: center;">AÚN NO HAY RÉCORDS.<br>¡SÉ EL PRIMERO!</div>';
+            this.#ui.listaRecordsInicio.innerHTML = '<div style="opacity: 0.5; padding: 10px; text-align: center;">AÚN NO HAY RÉCORDS.</div>';
         } else {
-            this.#ui.listaRecordsInicio.innerHTML = historico.map((r, i) => {
+            // Mostramos los 100 mejores en el scroll visual para que vaya fluido
+            const topDisplay = historico.slice(0, 100);
+            
+            this.#ui.listaRecordsInicio.innerHTML = topDisplay.map((r, i) => {
                 let medalla = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`;
                 return `
                     <div class="fila-record-lateral">
@@ -181,28 +201,40 @@ class JuegoMemoria {
         }
     }
 
+    #descargarLogAutomatico() {
+        const datos = JSON.parse(localStorage.getItem('log_completo_tarde')) || [];
+        if (datos.length === 0) return alert("No hay datos para descargar todavía.");
+
+        let csvContent = "data:text/csv;charset=utf-8,Puesto;Nombre;Tiempo;Hora\n";
+        datos.sort((a, b) => a.tiempo - b.tiempo).forEach((r, i) => {
+            csvContent += `${i + 1};${r.nombre};${r.tiempo};${r.hora}\n`;
+        });
+
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", `Ranking_Evento_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // ... (El resto de métodos: #volverAlInicio, #seleccionarJugadores, #iniciarPartida, etc. se mantienen igual que en tu original)
     #volverAlInicio() {
         cancelAnimationFrame(this.#rafId);
-        
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'none');
         this.#ui.panelControl.style.display = 'none';
-        
         this.#maxJugadores = 0;
         this.#jugadorActual = 1;
         this.#resultados = [];
         this.#cartasLevantadas = [];
         this.#parejasEncontradas = 0;
         this.#bloqueado = false;
-        
         this.#ui.tablero.innerHTML = '';
         this.#ui.displayTiempo.textContent = '0.0s';
         this.#ui.displayNombre.textContent = '---';
-        
         this.#ui.modalJugador.close();
         this.#ui.modalResultados.close();
-        
         this.#actualizarTop10Inicio(); 
-        
         this.#ui.panelRecordsIzq.style.display = 'flex';
         this.#ui.modalSeleccion.showModal();
     }
@@ -210,13 +242,10 @@ class JuegoMemoria {
     #seleccionarJugadores(e) {
         const val = parseInt(e.currentTarget.dataset.num, 10);
         if (Number.isNaN(val) || val < 1 || val > 5) return; 
-        
         this.#maxJugadores = val;
         this.#ui.modalSeleccion.close();
-        
         this.#ui.panelRecordsIzq.style.display = 'none';
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block');
-        
         this.#actualizarUIJugador();
     }
 
@@ -234,14 +263,12 @@ class JuegoMemoria {
             if (['1', '2', '3', '4', '5'].includes(e.key)) {
                 this.#maxJugadores = parseInt(e.key, 10);
                 this.#ui.modalSeleccion.close();
-                
                 this.#ui.panelRecordsIzq.style.display = 'none';
                 this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block');
                 this.#actualizarUIJugador();
             }
             return;
         }
-
         if (this.#ui.modalJugador.open) {
             const tecla = e.key.toUpperCase();
             if (/^[A-ZÑ]$/.test(tecla)) {
@@ -270,15 +297,12 @@ class JuegoMemoria {
         if (!nombre) return;
         this.#ui.displayNombre.textContent = nombre;
         this.#ui.modalJugador.close();
-        
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block');
         this.#ui.panelControl.style.display = 'flex';
-        
         this.#parejasEncontradas = 0;
         this.#cartasLevantadas = [];
         this.#bloqueado = false;
         this.#generarBaraja();
-        
         cancelAnimationFrame(this.#rafId); 
         this.#tiempoInicio = performance.now();
         this.#actualizarCronometro();
@@ -298,7 +322,6 @@ class JuegoMemoria {
         this.#ui.tablero.innerHTML = '';
         const fragmento = document.createDocumentFragment();
         const template = document.querySelector('#template-carta').content;
-
         this.#tableroVirtual.forEach((rutaImagen, indice) => {
             const clon = template.cloneNode(true);
             const carta = clon.querySelector('.carta');
@@ -318,7 +341,6 @@ class JuegoMemoria {
         if (!cartaDOM || this.#bloqueado || cartaDOM.classList.contains('volteada')) return;
         cartaDOM.classList.add('volteada');
         this.#cartasLevantadas.push(cartaDOM);
-
         if (this.#cartasLevantadas.length === 2) {
             this.#bloqueado = true;
             this.#verificarPareja();
@@ -332,7 +354,6 @@ class JuegoMemoria {
             this.#parejasEncontradas++;
             this.#cartasLevantadas = [];
             this.#bloqueado = false;
-
             if (this.#parejasEncontradas === JuegoMemoria.#ICONOS.length) {
                 this.#finalizarTurno();
             }
@@ -362,10 +383,8 @@ class JuegoMemoria {
         cancelAnimationFrame(this.#rafId);
         const tiempoFinal = parseFloat(((performance.now() - this.#tiempoInicio) / 1000).toFixed(1));
         const nombre = this.#ui.displayNombre.textContent;
-        
         this.#resultados.push({ nombre: nombre, tiempo: tiempoFinal });
         this.#guardarRecordLocal(nombre, tiempoFinal);
-
         if (this.#jugadorActual < this.#maxJugadores) {
             this.#jugadorActual++;
             setTimeout(() => this.#actualizarUIJugador(), JuegoMemoria.#TIEMPO_TRANSICION); 
@@ -381,7 +400,6 @@ class JuegoMemoria {
         if (top3[1]) ordenPodio.push({ ...top3[1], pos: 2, clase: 'plata' });
         if (top3[0]) ordenPodio.push({ ...top3[0], pos: 1, clase: 'oro' });
         if (top3[2]) ordenPodio.push({ ...top3[2], pos: 3, clase: 'bronce' });
-
         this.#ui.listaResultados.innerHTML = `
             <div class="podio-kahoot">
                 ${ordenPodio.map(r => `
@@ -394,7 +412,6 @@ class JuegoMemoria {
                     </div>
                 `).join('')}
             </div>
-            
             <div class="resto-clasificacion">
                 ${this.#resultados.slice(3).map((r, i) => `
                     <div class="fila-otros">
@@ -404,7 +421,6 @@ class JuegoMemoria {
                 `).join('')}
             </div>
         `;
-        
         this.#ui.modalResultados.showModal();
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block'); 
     }

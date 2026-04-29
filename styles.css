@@ -6,23 +6,12 @@
 *,
 *::before,
 *::after {
-    /* Evita la selección de texto al arrastrar el dedo o el ratón */
     user-select: none;
     -webkit-user-select: none;
-
-    /* Evita el menú contextual nativo al mantener pulsado (iOS Safari) */
     -webkit-touch-callout: none;
-
-    /* Evita el zoom con doble toque y mejora la respuesta táctil */
     touch-action: manipulation;
-
-    /* Elimina el resaltado semitransparente al tocar elementos (Android/iOS) */
     -webkit-tap-highlight-color: transparent;
-
-    /* Evita el efecto de "rebote" al hacer scroll más allá del límite (iOS) */
     overscroll-behavior: none;
-
-    /* Mejora el rendimiento del scroll y de animaciones con capas GPU */
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 }
@@ -35,20 +24,11 @@ input,
 textarea,
 select,
 [contenteditable="true"] {
-    /* Permitir selección de texto donde el usuario necesita escribir o copiar */
     user-select: auto;
     -webkit-user-select: auto;
-
-    /* Restaurar el menú contextual (copiar, pegar, seleccionar todo…) */
     -webkit-touch-callout: default;
-
-    /* Permitir scroll vertical dentro de textareas si el contenido lo necesita */
     touch-action: pan-y;
-
-    /* Restaurar el cursor de texto */
     cursor: auto;
-
-    /* Quitar la sombra de autocompletado en WebKit (Chrome, Safari) */
     -webkit-box-shadow: 0 0 0px 1000px transparent inset;
     box-shadow: none;
 }
@@ -61,24 +41,19 @@ button,
 a,
 label,
 [role="button"] {
-    /* Cursor de mano en escritorio */
     cursor: pointer;
-
-    /* Sin outline por defecto; recuerda añadir uno accesible con :focus-visible */
     outline: none;
 }
 
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
-    /* Outline accesible solo con teclado, no con clic/toque */
     outline: 2px solid currentColor;
     outline-offset: 3px;
 }
 
 /* =========================================
    1. VARIABLES Y SISTEMA DE DISEÑO LÍQUIDO (FLUID DESIGN)
-   La magia de clamp(): clamp(Mínimo, Ideal, Máximo)
 ========================================= */
 :root {
     --bg-color: #000000;
@@ -95,13 +70,11 @@ a:focus-visible,
     --blur-md: blur(16px);
     --blur-lg: blur(24px);
 
-    /* Bordes fluidos */
     --radius-sm:   clamp(6px, 1vmin, 10px);
     --radius-md:   clamp(10px, 1.5vmin, 16px);
     --radius-lg:   clamp(16px, 2.5vmin, 24px);
     --radius-pill: 50px;
 
-    /* Tipografía 100% adaptable a cualquier pantalla */
     --fs-sm:   clamp(0.9rem, 1.5vmin, 1.5rem);
     --fs-md:   clamp(1.1rem, 2vmin, 2.2rem);
     --fs-lg:   clamp(1.5rem, 3vmin, 3.2rem);
@@ -137,15 +110,12 @@ body {
     background-position: center;
     background-repeat: no-repeat;
 
-    /* ESTADO REPOSO: más oscuro */
     box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.7);
     transition: box-shadow 1s ease;
 }
 
-/* ESTADO JUEGO: más claro */
 body.modo-juego { box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3); }
 body.modo-juego .screensaver-panel { display: none !important; }
-
 
 /* =========================================
    3. GLASSMORPHISM
@@ -159,7 +129,6 @@ body.modo-juego .screensaver-panel { display: none !important; }
     box-shadow:              0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
-/* ¡LA MAGIA! Desactivamos la jaula de cristal solo en el contenedor exterior */
 dialog.glass-panel {
     background: transparent !important;
     backdrop-filter: none !important;
@@ -190,7 +159,6 @@ dialog.glass-panel {
 
 .tablero {
     display:               grid;
-    /* Las cartas calculan su tamaño según el espacio disponible en pantalla */
     grid-template-columns: repeat(4, clamp(65px, 16vmin, 180px));
     grid-template-rows:    repeat(4, clamp(65px, 16vmin, 180px));
     gap:                   clamp(8px, 1.5vmin, 25px);
@@ -222,7 +190,6 @@ dialog.glass-panel {
     -webkit-backface-visibility: hidden;
 }
 
-/* DORSO */
 .carta-dorso {
     background-color: #ffffff;
     background-image: url('img/5.png');
@@ -236,7 +203,6 @@ dialog.glass-panel {
 
 .carta-dorso:hover { box-shadow: 0 0 30px rgba(var(--neon-blue-rgb), 0.8); }
 
-/* FRENTE */
 .carta-frente {
     background: #000000;
     transform:  rotateY(180deg);
@@ -252,20 +218,18 @@ dialog.glass-panel {
     pointer-events: none;
 }
 
-
 /* =========================================
    5. MODALES Y FORMULARIOS
 ========================================= */
 dialog {
     margin:    auto;
-    padding:   0; /* Quitamos el padding de aquí para dárselo a modal-content */
+    padding:   0; 
     text-align: center;
     max-width: 800px;
     width:     90%;
     color:     white;
 }
 
-/* Y le pasamos el efecto de cristal a la caja interior para no atrapar al botón */
 .modal-content {
     background:              var(--glass-bg);
     backdrop-filter:         var(--blur-lg);
@@ -273,12 +237,12 @@ dialog {
     border:                  1px solid var(--glass-border);
     border-radius:           var(--radius-lg);
     box-shadow:              0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
-    padding:                 clamp(1.5rem, 4vmin, 4rem); /* El padding ahora vive aquí */
+    padding:                 clamp(1.5rem, 4vmin, 4rem); 
 }
 
 dialog::backdrop {
-    background:              transparent; /* Sin fondo oscuro */
-    backdrop-filter:         none;        /* Sin desenfoque */
+    background:              transparent; 
+    backdrop-filter:         none;        
     -webkit-backdrop-filter: none;
 }
 
@@ -321,6 +285,7 @@ input[type="text"] {
     font-weight:    700;
     text-transform: uppercase;
 }
+
 /* =========================================
    6. TÍTULOS Y BOTONES
 ========================================= */
@@ -490,13 +455,12 @@ input[type="text"] {
     to   { transform: scale(1.05); text-shadow: 0 0 40px rgba(var(--neon-blue-rgb), 1); }
 }
 
-
 /* =========================================
    10. BOTONES SUPERIORES (INICIO Y RÉCORDS)
 ========================================= */
 .btn-volver, .btn-records {
-    position:                fixed !important; /* Ancla forzada a la pantalla */
-    top:                     clamp(15px, 3vh, 30px) !important; /* Pegados arriba */
+    position:                fixed !important; 
+    top:                     clamp(15px, 3vh, 30px) !important; 
     font-size:               var(--fs-sm);
     padding:                 clamp(8px, 1vh, 12px) clamp(16px, 2vw, 24px);
     border-radius:           var(--radius-sm);
@@ -504,20 +468,18 @@ input[type="text"] {
     border:                  2px solid var(--neon-blue);
     color:                   var(--neon-blue);
     cursor:                  pointer;
-    z-index:                 999999 !important; /* Por encima de cualquier cosa */
+    z-index:                 999999 !important; 
     transition:              all 0.2s ease;
     font-weight:             700;
     backdrop-filter:         var(--blur-sm);
     -webkit-backdrop-filter: var(--blur-sm);
 }
 
-/* El de Volver a la esquina SUPERIOR IZQUIERDA */
 .btn-volver { 
     left: clamp(15px, 3vw, 30px) !important; 
     display: none; 
 }
 
-/* El de Récords a la esquina SUPERIOR DERECHA */
 .btn-records { 
     right: clamp(15px, 3vw, 30px) !important; 
 }
@@ -528,6 +490,7 @@ input[type="text"] {
     color: #000; 
     box-shadow: 0 0 15px var(--neon-blue); 
 }
+
 /* =========================================
    11. LOGO EMPRESA
 ========================================= */
@@ -535,7 +498,7 @@ input[type="text"] {
     position:       fixed;
     bottom:         clamp(10px, 3vh, 30px);
     left:           clamp(10px, 3vw, 30px);
-    height:         clamp(60px, 15vh, 220px); /* Adaptación perfecta al % de pantalla */
+    height:         clamp(60px, 15vh, 220px); 
     z-index:        9999;
     pointer-events: none;
     border-radius:  clamp(6px, 1.5vmin, 15px);
@@ -543,15 +506,11 @@ input[type="text"] {
 }
 
 /* =========================================
-   12. MEDIA QUERIES (SÓLO PARA CASOS EXTREMOS)
-   Como todo es fluido ahora, sólo necesitamos 
-   ajustar si la pantalla es inusualmente baja.
+   12. MEDIA QUERIES
 ========================================= */
 @media (max-height: 500px) {
     .panel-control { display: none; }
 }
-
-
 
 /* =========================================
    13. MODO ATRACCIÓN PREMIUM (CARTAS FLOTANTES 3D)
@@ -560,9 +519,9 @@ input[type="text"] {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     overflow: hidden;
-    z-index: 1; /* Detrás del título */
+    z-index: 1;
     perspective: 1200px;
-    pointer-events: none; /* Que no bloqueen tu dedo al tocar la pantalla */
+    pointer-events: none; 
 }
 
 .carta-flotante {
@@ -573,7 +532,7 @@ input[type="text"] {
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
     opacity: 0;
     animation: flotar3D linear forwards;
-    border: 2px solid rgba(0, 228, 124, 0.5); /* Borde neón sutil */
+    border: 2px solid rgba(0, 228, 124, 0.5); 
     background-color: #000;
 }
 
@@ -585,14 +544,13 @@ input[type="text"] {
     10% { opacity: 0.85; }
     90% { opacity: 0.85; }
     100% {
-        /* Suben hasta arriba dando vueltas en todos los ejes */
         transform: translateY(-40vh) rotateX(360deg) rotateY(720deg) rotateZ(180deg);
         opacity: 0;
     }
 }
 
 /* =========================================
-   14. PANEL LATERAL DE RÉCORDS (CHULO)
+   14. PANEL LATERAL DE RÉCORDS (SCROLL INFINITO)
 ========================================= */
 .panel-lateral-records {
     position: fixed;
@@ -601,15 +559,15 @@ input[type="text"] {
     transform: translateY(-50%);
     width: clamp(280px, 22vw, 360px);
     max-height: 75vh;
-    background: rgba(10, 15, 20, 0.85); /* Fondo oscuro premium */
+    background: rgba(10, 15, 20, 0.85); 
     backdrop-filter: var(--blur-md);
     -webkit-backdrop-filter: var(--blur-md);
     border: 1px solid rgba(0, 228, 124, 0.3);
-    border-left: 5px solid var(--neon-blue); /* Acento brillante en el borde */
+    border-left: 5px solid var(--neon-blue); 
     border-radius: var(--radius-md);
-    padding: 25px 20px;
-    z-index: 50; /* Por debajo de modales centrales, encima del fondo */
-    display: none; /* JS controla cuándo aparece (flex) */
+    padding: 25px 20px 10px 20px; /* Menos padding abajo para el degradado */
+    z-index: 50; 
+    display: none; 
     flex-direction: column;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 228, 124, 0.15);
     animation: entradaLateral 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -629,20 +587,34 @@ input[type="text"] {
     text-shadow: 0 0 10px var(--neon-blue);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 15px;
+    flex-shrink: 0; /* Evita que el título se aplaste */
 }
 
-.panel-lateral-records .resto-clasificacion {
+/* --- MAGIA DEL SCROLL INFINITO --- */
+.listado-scroll {
+    flex: 1; /* Ocupa todo el espacio restante del panel */
+    min-height: 0; /* Obliga a que se active el scroll en lugar de estirar el panel */
     overflow-y: auto;
-    padding-right: 8px;
+    padding-right: 12px; /* Deja hueco para la barra bonita */
+    margin-bottom: 15px;
+    
+    /* El difuminado por arriba y abajo tipo créditos de cine */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
 }
 
-/* Scrollbar personalizada para el panel lateral */
-.panel-lateral-records .resto-clasificacion::-webkit-scrollbar {
+/* Scrollbar personalizada super elegante */
+.listado-scroll::-webkit-scrollbar {
     width: 6px;
 }
-.panel-lateral-records .resto-clasificacion::-webkit-scrollbar-thumb {
+.listado-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); /* Carril sutil */
+    border-radius: 10px;
+}
+.listado-scroll::-webkit-scrollbar-thumb {
     background: var(--neon-blue);
     border-radius: 10px;
+    box-shadow: 0 0 10px var(--neon-blue);
 }
 
 .fila-record-lateral {
