@@ -1,7 +1,6 @@
 class JuegoMemoria {
     static #TIEMPO_VISTA_CARTA = 1000;
     static #TIEMPO_TRANSICION = 1500;
-    // Tus nuevos iconos
     static #ICONOS = ['img/1.png', 'img/2.png', 'img/13.png', 'img/6.png', 'img/15.png', 'img/7.png', 'img/11.png', 'img/14.png'];
 
     #maxJugadores = 0;
@@ -24,10 +23,11 @@ class JuegoMemoria {
         this.#inicializarAudio();
         this.#vincularEventos();
 
-        this.#asegurarRecordDani(); // 🚀 Mantiene la marca del creador
+        this.#asegurarRecordDani(); 
         
         this.#actualizarTop10Inicio();
-        this.#ui.screensaver.showModal();
+        // Usamos .show() en lugar de .showModal() para no bloquear el scroll
+        this.#ui.screensaver.show();
         this.#iniciarModoAtraccion(); 
         this.#iniciarControlInactividad();
     }
@@ -96,7 +96,6 @@ class JuegoMemoria {
             carta.className = 'carta-flotante';
             const imgRandom = JuegoMemoria.#ICONOS[Math.floor(Math.random() * JuegoMemoria.#ICONOS.length)];
             
-            // 🚩 RESTAURADO: Se mantiene la lógica de img/5.png
             carta.style.backgroundImage = Math.random() > 0.35 ? `url('${imgRandom}')` : `url('img/5.png')`;
             
             carta.style.left = `${Math.random() * 95}%`;
@@ -129,8 +128,9 @@ class JuegoMemoria {
             this.#ui.screensaver.close();
             this.#detenerModoAtraccion(); 
             document.body.classList.add('modo-juego'); 
+            
             this.#ui.panelRecordsIzq.style.display = 'flex';
-            this.#ui.modalSeleccion.showModal();
+            this.#ui.modalSeleccion.show(); // Cambiado a .show()
         });
 
         this.#ui.btnsNum.forEach(btn => btn.addEventListener('click', (e) => this.#seleccionarJugadores(e)));
@@ -153,7 +153,7 @@ class JuegoMemoria {
         document.addEventListener('click', (e) => this.#manejarTecladoVirtual(e));
         document.addEventListener('keydown', (e) => this.#manejarTecladoFisico(e));
 
-        // 🚀 COMANDO SECRETO: Shift + Alt + S para descargar el Excel de la tarde
+        // 🚀 COMANDO SECRETO PARA DESCARGAR EXCEL (Shift + Alt + S)
         document.addEventListener('keydown', (e) => {
             if (e.shiftKey && e.altKey && e.code === 'KeyS') {
                 this.#descargarLogAutomatico();
@@ -162,13 +162,13 @@ class JuegoMemoria {
     }
 
     #guardarRecordLocal(nombre, tiempo) {
-        // 1. Guardar en el Ranking Visual (Infinito, sin .slice(0,10))
+        // 1. Guardar en el Ranking Infinito Visual
         let historico = JSON.parse(localStorage.getItem('lenzelta_records')) || [];
         historico.push({ nombre, tiempo });
         historico.sort((a, b) => a.tiempo - b.tiempo);
         localStorage.setItem('lenzelta_records', JSON.stringify(historico));
 
-        // 2. Guardar en el Log de la tarde (con hora para tu control interno)
+        // 2. Guardar en el Log Secreto con hora exacta
         let logTarde = JSON.parse(localStorage.getItem('log_completo_tarde')) || [];
         logTarde.push({
             nombre: nombre,
@@ -186,7 +186,7 @@ class JuegoMemoria {
         if (historico.length === 0) {
             this.#ui.listaRecordsInicio.innerHTML = '<div style="opacity: 0.5; padding: 10px; text-align: center;">AÚN NO HAY RÉCORDS.</div>';
         } else {
-            // Mostramos los 100 mejores en el scroll visual para que vaya fluido
+            // Mostramos máximo 100 para no laggear, pero se guardan todos
             const topDisplay = historico.slice(0, 100);
             
             this.#ui.listaRecordsInicio.innerHTML = topDisplay.map((r, i) => {
@@ -201,51 +201,62 @@ class JuegoMemoria {
         }
     }
 
+    // 🚀 MÉTODO PARA EXPORTAR CSV
     #descargarLogAutomatico() {
         const datos = JSON.parse(localStorage.getItem('log_completo_tarde')) || [];
-        if (datos.length === 0) return alert("No hay datos para descargar todavía.");
+        if (datos.length === 0) return alert("Aún no hay jugadores registrados hoy.");
 
         let csvContent = "data:text/csv;charset=utf-8,Puesto;Nombre;Tiempo;Hora\n";
+        
         datos.sort((a, b) => a.tiempo - b.tiempo).forEach((r, i) => {
             csvContent += `${i + 1};${r.nombre};${r.tiempo};${r.hora}\n`;
         });
 
+        const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
-        link.setAttribute("href", encodeURI(csvContent));
-        link.setAttribute("download", `Ranking_Evento_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Jugadores_Evento_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
-    // ... (El resto de métodos: #volverAlInicio, #seleccionarJugadores, #iniciarPartida, etc. se mantienen igual que en tu original)
     #volverAlInicio() {
         cancelAnimationFrame(this.#rafId);
+        
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'none');
         this.#ui.panelControl.style.display = 'none';
+        
         this.#maxJugadores = 0;
         this.#jugadorActual = 1;
         this.#resultados = [];
         this.#cartasLevantadas = [];
         this.#parejasEncontradas = 0;
         this.#bloqueado = false;
+        
         this.#ui.tablero.innerHTML = '';
         this.#ui.displayTiempo.textContent = '0.0s';
         this.#ui.displayNombre.textContent = '---';
+        
         this.#ui.modalJugador.close();
         this.#ui.modalResultados.close();
+        
         this.#actualizarTop10Inicio(); 
+        
         this.#ui.panelRecordsIzq.style.display = 'flex';
-        this.#ui.modalSeleccion.showModal();
+        this.#ui.modalSeleccion.show(); // Cambiado a .show()
     }
 
     #seleccionarJugadores(e) {
         const val = parseInt(e.currentTarget.dataset.num, 10);
         if (Number.isNaN(val) || val < 1 || val > 5) return; 
+        
         this.#maxJugadores = val;
         this.#ui.modalSeleccion.close();
+        
         this.#ui.panelRecordsIzq.style.display = 'none';
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block');
+        
         this.#actualizarUIJugador();
     }
 
@@ -263,12 +274,14 @@ class JuegoMemoria {
             if (['1', '2', '3', '4', '5'].includes(e.key)) {
                 this.#maxJugadores = parseInt(e.key, 10);
                 this.#ui.modalSeleccion.close();
+                
                 this.#ui.panelRecordsIzq.style.display = 'none';
                 this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block');
                 this.#actualizarUIJugador();
             }
             return;
         }
+
         if (this.#ui.modalJugador.open) {
             const tecla = e.key.toUpperCase();
             if (/^[A-ZÑ]$/.test(tecla)) {
@@ -289,7 +302,7 @@ class JuegoMemoria {
         if (this.#ui.btnTerminar) {
             this.#ui.btnTerminar.style.display = this.#jugadorActual > 1 ? 'block' : 'none';
         }
-        this.#ui.modalJugador.showModal(); 
+        this.#ui.modalJugador.show(); // Cambiado a .show()
     }
 
     #iniciarPartida() {
@@ -297,12 +310,15 @@ class JuegoMemoria {
         if (!nombre) return;
         this.#ui.displayNombre.textContent = nombre;
         this.#ui.modalJugador.close();
+        
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block');
         this.#ui.panelControl.style.display = 'flex';
+        
         this.#parejasEncontradas = 0;
         this.#cartasLevantadas = [];
         this.#bloqueado = false;
         this.#generarBaraja();
+        
         cancelAnimationFrame(this.#rafId); 
         this.#tiempoInicio = performance.now();
         this.#actualizarCronometro();
@@ -322,6 +338,7 @@ class JuegoMemoria {
         this.#ui.tablero.innerHTML = '';
         const fragmento = document.createDocumentFragment();
         const template = document.querySelector('#template-carta').content;
+
         this.#tableroVirtual.forEach((rutaImagen, indice) => {
             const clon = template.cloneNode(true);
             const carta = clon.querySelector('.carta');
@@ -341,6 +358,7 @@ class JuegoMemoria {
         if (!cartaDOM || this.#bloqueado || cartaDOM.classList.contains('volteada')) return;
         cartaDOM.classList.add('volteada');
         this.#cartasLevantadas.push(cartaDOM);
+
         if (this.#cartasLevantadas.length === 2) {
             this.#bloqueado = true;
             this.#verificarPareja();
@@ -354,6 +372,7 @@ class JuegoMemoria {
             this.#parejasEncontradas++;
             this.#cartasLevantadas = [];
             this.#bloqueado = false;
+
             if (this.#parejasEncontradas === JuegoMemoria.#ICONOS.length) {
                 this.#finalizarTurno();
             }
@@ -383,8 +402,10 @@ class JuegoMemoria {
         cancelAnimationFrame(this.#rafId);
         const tiempoFinal = parseFloat(((performance.now() - this.#tiempoInicio) / 1000).toFixed(1));
         const nombre = this.#ui.displayNombre.textContent;
+        
         this.#resultados.push({ nombre: nombre, tiempo: tiempoFinal });
         this.#guardarRecordLocal(nombre, tiempoFinal);
+
         if (this.#jugadorActual < this.#maxJugadores) {
             this.#jugadorActual++;
             setTimeout(() => this.#actualizarUIJugador(), JuegoMemoria.#TIEMPO_TRANSICION); 
@@ -400,6 +421,7 @@ class JuegoMemoria {
         if (top3[1]) ordenPodio.push({ ...top3[1], pos: 2, clase: 'plata' });
         if (top3[0]) ordenPodio.push({ ...top3[0], pos: 1, clase: 'oro' });
         if (top3[2]) ordenPodio.push({ ...top3[2], pos: 3, clase: 'bronce' });
+
         this.#ui.listaResultados.innerHTML = `
             <div class="podio-kahoot">
                 ${ordenPodio.map(r => `
@@ -412,6 +434,7 @@ class JuegoMemoria {
                     </div>
                 `).join('')}
             </div>
+            
             <div class="resto-clasificacion">
                 ${this.#resultados.slice(3).map((r, i) => `
                     <div class="fila-otros">
@@ -421,7 +444,8 @@ class JuegoMemoria {
                 `).join('')}
             </div>
         `;
-        this.#ui.modalResultados.showModal();
+        
+        this.#ui.modalResultados.show(); // Cambiado a .show()
         this.#ui.btnsVolver.forEach(btn => btn.style.display = 'block'); 
     }
 }

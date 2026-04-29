@@ -221,13 +221,24 @@ dialog.glass-panel {
 /* =========================================
    5. MODALES Y FORMULARIOS
 ========================================= */
+/* =========================================
+   5. MODALES Y FORMULARIOS
+========================================= */
 dialog {
-    margin:    auto;
     padding:   0; 
     text-align: center;
     max-width: 800px;
     width:     90%;
     color:     white;
+    /* --- NUEVO: Centrado forzado para no bloquear el fondo --- */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    background: transparent;
+    border: none;
+    z-index: 1000;
 }
 
 .modal-content {
@@ -440,14 +451,95 @@ input[type="text"] {
 
 .screensaver-panel::backdrop { background: transparent; }
 
+/* =========================================
+   9. MODO ATRACCIÓN (SCREENSAVER PULIDO)
+========================================= */
+.screensaver-panel {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Degradado circular para centrar la atención */
+    background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.95) 100%);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    overflow: hidden; /* Corta de raíz cualquier intento de barra de desplazamiento */
+}
+
+.screensaver-panel::backdrop { background: transparent; }
+
 .texto-latido {
-    font-size:   clamp(3rem, 10vmin, 8rem);
+    font-size: clamp(2.5rem, 6vw, 4.5rem); /* Medidas seguras para que no desborde */
     font-weight: 900;
-    text-align:  center;
+    text-align: center;
     line-height: 1.2;
-    color:       var(--neon-blue);
-    text-shadow: 0 0 20px rgba(var(--neon-blue-rgb), 0.8);
-    animation:   latido 1.5s infinite alternate;
+    color: #ffffff; /* La pregunta en blanco queda más premium */
+    text-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    animation: latido 2s infinite alternate ease-in-out;
+    max-width: 90vw; /* El texto nunca será más ancho que la pantalla */
+    z-index: 2;
+    position: relative;
+    padding: 0 20px;
+}
+
+/* El toque verde neón solo para la "Llamada a la acción" */
+.texto-latido span.neon {
+    color: var(--neon-blue);
+    text-shadow: 0 0 15px rgba(var(--neon-blue-rgb), 0.6), 0 0 30px rgba(var(--neon-blue-rgb), 0.3);
+    display: block;
+    margin-top: 20px;
+    font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+}
+
+@keyframes latido {
+    0% { transform: scale(0.98); }
+    100% { transform: scale(1.02); }
+}
+
+
+/* =========================================
+   13. MODO ATRACCIÓN PREMIUM (CARTAS FLOTANTES 3D)
+========================================= */
+#screensaver-cartas {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    z-index: 1; /* Detrás del texto */
+    perspective: 1000px;
+    pointer-events: none; 
+}
+
+.carta-flotante {
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    /* Efecto cristal con brillo verde muy sutil */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 
+                0 0 15px rgba(var(--neon-blue-rgb), 0.2),
+                inset 0 0 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    animation: flotar3D linear forwards;
+    background-color: #111;
+}
+
+/* Rotación más lenta y elegante (como gravedad cero) */
+@keyframes flotar3D {
+    0% {
+        transform: translateY(110vh) rotateX(15deg) rotateY(-15deg) rotateZ(0deg) scale(0.8);
+        opacity: 0;
+    }
+    15% { opacity: 0.8; }
+    85% { opacity: 0.8; }
+    100% {
+        /* Flotan hacia arriba girando suavemente */
+        transform: translateY(-40vh) rotateX(-15deg) rotateY(15deg) rotateZ(180deg) scale(1.1);
+        opacity: 0;
+    }
 }
 
 @keyframes latido {
@@ -512,42 +604,7 @@ input[type="text"] {
     .panel-control { display: none; }
 }
 
-/* =========================================
-   13. MODO ATRACCIÓN PREMIUM (CARTAS FLOTANTES 3D)
-========================================= */
-#screensaver-cartas {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    overflow: hidden;
-    z-index: 1;
-    perspective: 1200px;
-    pointer-events: none; 
-}
 
-.carta-flotante {
-    position: absolute;
-    background-size: cover;
-    background-position: center;
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-    opacity: 0;
-    animation: flotar3D linear forwards;
-    border: 2px solid rgba(0, 228, 124, 0.5); 
-    background-color: #000;
-}
-
-@keyframes flotar3D {
-    0% {
-        transform: translateY(110vh) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-        opacity: 0;
-    }
-    10% { opacity: 0.85; }
-    90% { opacity: 0.85; }
-    100% {
-        transform: translateY(-40vh) rotateX(360deg) rotateY(720deg) rotateZ(180deg);
-        opacity: 0;
-    }
-}
 
 /* =========================================
    14. PANEL LATERAL DE RÉCORDS (SCROLL INFINITO)
