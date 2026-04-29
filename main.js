@@ -1,7 +1,7 @@
 class JuegoMemoria {
     static #TIEMPO_VISTA_CARTA = 1000;
     static #TIEMPO_TRANSICION = 1500;
-    static #ICONOS = ['img/1.png', 'img/2.png', 'img/3.png', 'img/4.png', 'img/15.png', 'img/6.png', 'img/7.png', 'img/8.png'];
+    static #ICONOS = ['img/1.png', 'img/2.png', 'img/13.png', 'img/6.png', 'img/15.png', 'img/7.png', 'img/11.png', 'img/14.png'];
 
     #maxJugadores = 0;
     #jugadorActual = 1;
