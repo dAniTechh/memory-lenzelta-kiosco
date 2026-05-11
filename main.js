@@ -268,6 +268,8 @@ class JuegoMemoria {
         if (e.target.dataset.accion === 'borrar') {
             this.#ui.inputNombre.value = this.#ui.inputNombre.value.slice(0, -1);
         } else {
+            // 🚩 LÍMITE DE 12 CARACTERES VIRTUAL
+            if (this.#ui.inputNombre.value.length >= 12) return;
             this.#ui.inputNombre.value += e.target.textContent;
         }
     }
@@ -288,10 +290,13 @@ class JuegoMemoria {
         if (this.#ui.modalJugador.open) {
             const tecla = e.key.toUpperCase();
             if (/^[A-ZÑ]$/.test(tecla)) {
+                // 🚩 LÍMITE DE 12 CARACTERES FÍSICO
+                if (this.#ui.inputNombre.value.length >= 12) return;
                 this.#ui.inputNombre.value += tecla;
             } else if (e.key === 'Backspace') {
                 this.#ui.inputNombre.value = this.#ui.inputNombre.value.slice(0, -1);
-            } else if (e.key === 'Enter' && this.#ui.inputNombre.value.trim() !== '') {
+            } else if (e.key === 'Enter') {
+                // 🚩 ELIMINADO EL CORTE POR NOMBRE VACÍO EN EL ENTER
                 e.preventDefault();
                 this.#iniciarPartida();
             }
@@ -309,8 +314,13 @@ class JuegoMemoria {
     }
 
     #iniciarPartida() {
-        const nombre = this.#ui.inputNombre.value.trim();
-        if (!nombre) return;
+        let nombre = this.#ui.inputNombre.value.trim();
+        
+        // 🚩 CORRECCIÓN FALLO SILENCIOSO: SI ESTÁ VACÍO, ASIGNAMOS NOMBRE AUTOMÁTICO
+        if (!nombre) {
+            nombre = `JUGADOR ${this.#jugadorActual}`;
+        }
+
         this.#ui.displayNombre.textContent = nombre;
         this.#ui.modalJugador.close();
         
